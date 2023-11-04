@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.example.quizapp.databinding.ActivityMainBinding;
@@ -19,6 +21,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(R.layout.activity_main);
+
+
+
+        SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
+        if (!pref.contains("email")) {
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
+        }
         setContentView(binding.getRoot());
         replaceFragment(new HomeFragment());
 
