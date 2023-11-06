@@ -4,4 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="dark_blue">#32357a</color>
     <color name="light_blue">#f2f1f6</color>
+    <color name="search_box_bg">#F0ECFF</color>
+
+
 </resources>
