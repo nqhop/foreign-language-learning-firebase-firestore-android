@@ -19,23 +19,23 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
 
         // Ánh xạ các View
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPassword);
-        etName = findViewById(R.id.etName);
-        btnSignup = findViewById(R.id.btnSignup);
-
-        btnSignup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Lấy dữ liệu
-                String email = etEmail.getText().toString();
-                String password = etPassword.getText().toString();
-                String name = etName.getText().toString();
-
-                // Gọi API đăng ký
-                register(email, password, name);
-            }
-        });
+//        etEmail = findViewById(R.id.etEmail);
+//        etPassword = findViewById(R.id.etPassword);
+//        etName = findViewById(R.id.etName);
+//        btnSignup = findViewById(R.id.btnSignup);
+//
+//        btnSignup.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // Lấy dữ liệu
+//                String email = etEmail.getText().toString();
+//                String password = etPassword.getText().toString();
+//                String name = etName.getText().toString();
+//
+//                // Gọi API đăng ký
+//                register(email, password, name);
+//            }
+//        });
     }
 
     private void register(String email, String password, String name) {
