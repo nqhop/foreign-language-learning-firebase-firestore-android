@@ -2,11 +2,22 @@ package com.example.quizapp;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.quizapp.adapters.Topic_RecyclerViewAdapter;
+import com.example.quizapp.models.Topic;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,6 +57,8 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
+    ArrayList<Topic> topicModels = new ArrayList<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +71,29 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
+//         Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        RecyclerView homeTopicRecycleView = view.findViewById(R.id.homeTopicRecycleView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        homeTopicRecycleView.setLayoutManager(layoutManager);
+
+        setUpHomeTopicModels();
+
+        Topic_RecyclerViewAdapter adapter = new Topic_RecyclerViewAdapter(getContext(), topicModels);
+        homeTopicRecycleView.setAdapter(adapter);
+    }
+
+    private void setUpHomeTopicModels(){
+        String[] homeTopicsNameItem = getResources().getStringArray(R.array.topics);
+        for (String topic: homeTopicsNameItem) {
+            topicModels.add(new Topic(topic));
+        }
     }
 }

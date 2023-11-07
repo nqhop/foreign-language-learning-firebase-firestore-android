@@ -21,16 +21,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(R.layout.activity_main);
-
-
-
-        SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
-        if (!pref.contains("email")) {
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-            finish();
-        }
         setContentView(binding.getRoot());
         replaceFragment(new HomeFragment());
+
+
+//        SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
+//        if (!pref.contains("email")) {
+//            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+//            finish();
+//        }
+
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             if(item.getItemId() == R.id.home){
