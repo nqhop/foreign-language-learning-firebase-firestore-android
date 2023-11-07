@@ -2,4 +2,16 @@
     <string name="app_name">quiz app</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="topics">
+        <item>Transport</item>
+        <item>Education</item>
+        <item>Social Media</item>
+        <item>Music</item>
+        <item>Food</item>
+        <item>Travling</item>
+        <item>Environment</item>
+        <item>Skills</item>
+        <item>Entertainment</item>
+        <item>Health</item>
+    </string-array>
 </resources>
