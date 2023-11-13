@@ -15,7 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.quizapp.adapters.Topic_RecyclerViewAdapter;
+import com.example.quizapp.adapters.Vocab_RecyclerViewAdapter;
 import com.example.quizapp.models.Topic;
+import com.example.quizapp.models.Vocab;
 
 import java.util.ArrayList;
 
@@ -58,6 +60,7 @@ public class HomeFragment extends Fragment {
     }
 
     ArrayList<Topic> topicModels = new ArrayList<>();
+    ArrayList<Vocab> vocabModels = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,13 +84,28 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         RecyclerView homeTopicRecycleView = view.findViewById(R.id.homeTopicRecycleView);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        homeTopicRecycleView.setLayoutManager(layoutManager);
+        RecyclerView homeVocabRecycleView = view.findViewById(R.id.homeVocabRecycleView);
+        LinearLayoutManager layoutManagerForTopic = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutManagerForVocab = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        homeTopicRecycleView.setLayoutManager(layoutManagerForTopic);
+        homeVocabRecycleView.setLayoutManager(layoutManagerForVocab);
 
+        // topic
         setUpHomeTopicModels();
-
         Topic_RecyclerViewAdapter adapter = new Topic_RecyclerViewAdapter(getContext(), topicModels);
         homeTopicRecycleView.setAdapter(adapter);
+
+        // vocab
+        setUpHomeVocabModels();
+        Vocab_RecyclerViewAdapter vocabAdapter = new Vocab_RecyclerViewAdapter(getContext(), vocabModels);
+        homeVocabRecycleView.setAdapter(vocabAdapter);
+    }
+
+    private void setUpHomeVocabModels() {
+        String[] homeVocabsNameItem = getResources().getStringArray(R.array.vocabs);
+        for(String vocab : homeVocabsNameItem){
+            vocabModels.add(new Vocab(vocab));
+        }
     }
 
     private void setUpHomeTopicModels(){
@@ -96,4 +114,6 @@ public class HomeFragment extends Fragment {
             topicModels.add(new Topic(topic));
         }
     }
+
+
 }
