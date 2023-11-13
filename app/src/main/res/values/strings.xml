@@ -14,4 +14,14 @@
         <item>Entertainment</item>
         <item>Health</item>
     </string-array>
+
+    <string-array name="vocabs">
+        <item>vocab1</item>
+        <item>vocab2</item>
+        <item>vocab3</item>
+        <item>vocab3</item>
+        <item>vocab4</item>
+        <item>vocab5</item>
+        <item>vocab6</item>
+    </string-array>
 </resources>
