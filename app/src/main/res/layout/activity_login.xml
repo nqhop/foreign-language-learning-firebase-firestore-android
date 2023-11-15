@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#00076f">
+    android:layout_height="match_parent">
 
+    <!-- ImageView để hiển thị hình ảnh background -->
+    <ImageView
+        android:id="@+id/imageViewBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background_image"
+    android:scaleType="centerCrop"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- ImageView cho biểu tượng Android -->
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="100dp"
@@ -16,6 +29,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- TextView cho tiêu đề "Đăng Nhập" -->
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -26,8 +40,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageView" />
-    <!-- Thêm các EditText email và password -->
 
+    <!-- EditText cho Email -->
     <EditText
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
@@ -36,6 +50,7 @@
         android:hint="Email"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
+    <!-- EditText cho Password -->
     <EditText
         android:id="@+id/etPassword"
         android:layout_width="match_parent"
@@ -43,8 +58,7 @@
         android:hint="Mật khẩu"
         app:layout_constraintTop_toBottomOf="@+id/etEmail" />
 
-    <!-- Thêm Button đăng nhập -->
-
+    <!-- Button Đăng nhập -->
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="0dp"
@@ -57,6 +71,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 
+    <!-- TextView "Hoặc đăng nhập nhanh bằng" -->
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
@@ -68,6 +83,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
 
+    <!-- Button Facebook -->
     <Button
         android:id="@+id/buttonFacebook"
         android:layout_width="162dp"
@@ -78,7 +94,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
-
+    <!-- Button Google -->
     <Button
         android:id="@+id/buttonGoogle"
         android:layout_width="162dp"
@@ -90,8 +106,7 @@
         app:layout_constraintStart_toEndOf="@+id/buttonFacebook"
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
-
-    <!-- EditText and Button -->
+    <!-- TextView "Quên mật khẩu?" -->
     <TextView
         android:id="@+id/textViewForgotPassword"
         android:layout_width="wrap_content"
@@ -99,9 +114,11 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
         android:text="Quên mật khẩu?"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonGoogle" />
 
+    <!-- TextView "Đăng ký tài khoản mới" -->
     <TextView
         android:id="@+id/textViewSignup"
         android:layout_width="wrap_content"
@@ -109,8 +126,8 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="24dp"
         android:text="Đăng ký tài khoản mới"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonFacebook" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
