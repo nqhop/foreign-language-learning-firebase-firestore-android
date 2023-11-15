@@ -50,4 +50,12 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
     }
+    private void checkLoginStatus() {
+        SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
+        if (!pref.contains("email")) {
+            // Nếu chưa đăng nhập, chuyển đến LoginActivity
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
+        }
+    }
 }
