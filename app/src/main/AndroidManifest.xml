@@ -12,9 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuizApp"
         tools:targetApi="31">
-        <activity android:name=".LoginActivity"
+        <activity
+            android:name=".VocabActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".LoginActivity"
             android:exported="false"
-            android:label="LoginActivity"/>
+            android:label="LoginActivity" />
         <activity
             android:name=".profileActivity"
             android:exported="false" />
