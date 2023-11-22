@@ -8,16 +8,21 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.quizapp.adapters.Topic_RecyclerViewAdapter;
 import com.example.quizapp.adapters.Vocab_RecyclerViewAdapter;
 import com.example.quizapp.models.Topic;
 import com.example.quizapp.models.Vocab;
+import com.google.firebase.Firebase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -59,8 +64,11 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
+    private
     ArrayList<Topic> topicModels = new ArrayList<>();
     ArrayList<Vocab> vocabModels = new ArrayList<>();
+    RecyclerView homeTopicRecycleView, homeVocabRecycleView;
+    private DatabaseReference databaseReference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,29 +90,29 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        RecyclerView homeTopicRecycleView = view.findViewById(R.id.homeTopicRecycleView);
-        RecyclerView homeVocabRecycleView = view.findViewById(R.id.homeVocabRecycleView);
+        homeTopicRecycleView = view.findViewById(R.id.homeTopicRecycleView);
+        homeVocabRecycleView = view.findViewById(R.id.homeVocabRecycleView);
         LinearLayoutManager layoutManagerForTopic = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         LinearLayoutManager layoutManagerForVocab = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         homeTopicRecycleView.setLayoutManager(layoutManagerForTopic);
         homeVocabRecycleView.setLayoutManager(layoutManagerForVocab);
 
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+
         // topic
         setUpHomeTopicModels();
-        Topic_RecyclerViewAdapter adapter = new Topic_RecyclerViewAdapter(getContext(), topicModels);
-        homeTopicRecycleView.setAdapter(adapter);
 
         // vocab
         setUpHomeVocabModels();
-        Vocab_RecyclerViewAdapter vocabAdapter = new Vocab_RecyclerViewAdapter(getContext(), vocabModels);
-        homeVocabRecycleView.setAdapter(vocabAdapter);
     }
+
 
     private void setUpHomeVocabModels() {
         String[] homeVocabsNameItem = getResources().getStringArray(R.array.vocabs);
         for(String vocab : homeVocabsNameItem){
             vocabModels.add(new Vocab(vocab));
+            Vocab_RecyclerViewAdapter vocabAdapter = new Vocab_RecyclerViewAdapter(getContext(), vocabModels);
+            homeVocabRecycleView.setAdapter(vocabAdapter);
         }
     }
 
@@ -113,7 +121,7 @@ public class HomeFragment extends Fragment {
         for (String topic: homeTopicsNameItem) {
             topicModels.add(new Topic(topic));
         }
+        Topic_RecyclerViewAdapter adapter = new Topic_RecyclerViewAdapter(getContext(), topicModels);
+        homeTopicRecycleView.setAdapter(adapter);
     }
-
-
 }

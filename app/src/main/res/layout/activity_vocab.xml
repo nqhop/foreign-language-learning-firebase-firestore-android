@@ -36,7 +36,8 @@
 
     <TextView
         android:id="@+id/flipCardTextView"
-        android:background="@drawable/flashcard"
+        android:background="@drawable/shadow_141323"
+
 
         android:text="Frond"
         android:gravity="center"
