@@ -7,6 +7,14 @@
     android:background="#536645">
 
     <!-- TODO: Update blank fragment layout -->
+
+
+    <Button
+        android:id="@+id/btnEnterVocab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="demo Flashcard" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

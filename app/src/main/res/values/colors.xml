@@ -5,6 +5,8 @@
     <color name="dark_blue">#32357a</color>
     <color name="light_blue">#f2f1f6</color>
     <color name="search_box_bg">#F0ECFF</color>
+    <color name="ghost_white">#F8F8FF</color>
+    <color name="border_card">#878787</color>
 
 
 </resources>
