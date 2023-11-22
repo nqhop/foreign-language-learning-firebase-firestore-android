@@ -1,4 +1,4 @@
-package com.example.quizapp;
+package com.example.quizapp.fragments;
 
 import android.os.Bundle;
 
@@ -13,18 +13,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.quizapp.R;
 import com.example.quizapp.adapters.Topic_RecyclerViewAdapter;
 import com.example.quizapp.adapters.Vocab_RecyclerViewAdapter;
 import com.example.quizapp.models.Topic;
 import com.example.quizapp.models.Vocab;
+import com.example.quizapp.repositories.TopicRepository;
+import com.example.quizapp.utils.FirebaseUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Firebase;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -73,8 +72,6 @@ public class HomeFragment extends Fragment {
     ArrayList<Topic> topicModels = new ArrayList<>();
     ArrayList<Vocab> vocabModels = new ArrayList<>();
     RecyclerView homeTopicRecycleView, homeVocabRecycleView;
-    private DatabaseReference databaseReference;
-    private FirebaseFirestore firestore;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,8 +100,6 @@ public class HomeFragment extends Fragment {
         homeTopicRecycleView.setLayoutManager(layoutManagerForTopic);
         homeVocabRecycleView.setLayoutManager(layoutManagerForVocab);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        firestore = FirebaseFirestore.getInstance();
 
         // topic
         setUpHomeTopicModels();
@@ -116,19 +111,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void fetchData() {
-        firestore.collection("forder").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                    for (QueryDocumentSnapshot document:task.getResult()
-                         ) {
-                        Log.d("fetchData", document.getId() + "->"+document.getData());
-                    }
-                }else{
-                    Log.d("fetchData", "Failed");
-                }
-            }
-        });
+        TopicRepository topicRepository = new TopicRepository();
+        topicRepository.getListTopic("foods");
     }
 
 
