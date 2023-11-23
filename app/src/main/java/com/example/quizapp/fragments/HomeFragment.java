@@ -12,8 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.quizapp.R;
+import com.example.quizapp.RecyclerViewInterface;
 import com.example.quizapp.adapters.Topic_RecyclerViewAdapter;
 import com.example.quizapp.adapters.Vocab_RecyclerViewAdapter;
 import com.example.quizapp.models.Topic;
@@ -36,7 +38,7 @@ import java.util.ArrayList;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements RecyclerViewInterface {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -108,10 +110,11 @@ public class HomeFragment extends Fragment {
         // vocab
         setUpHomeVocabModels();
 
-        fetchDataFromFirestore();
+        fetchTopicFromFirestore();
+        fetchVocabFromFirestore();
     }
 
-    private void fetchDataFromFirestore() {
+    private void fetchTopicFromFirestore() {
 
         topicRepository.getTopics().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -130,6 +133,10 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    private void fetchVocabFromFirestore(){
+        topicRepository.getVocabsByTopicName();
+    }
+
     private void setUpHomeVocabModels() {
         String[] homeVocabsNameItem = getResources().getStringArray(R.array.vocabs);
         for(String vocab : homeVocabsNameItem){
@@ -144,7 +151,12 @@ public class HomeFragment extends Fragment {
             topicModels.add(new Topic(topic));
         });
 
-        Topic_RecyclerViewAdapter adapter = new Topic_RecyclerViewAdapter(getContext(), topicModels);
+        Topic_RecyclerViewAdapter adapter = new Topic_RecyclerViewAdapter(getContext(), topicModels, this);
         homeTopicRecycleView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onItemClick(int posotion) {
+        Log.d("onItemClick", "from home frament " + topicModels.get(posotion).getName());
     }
 }
