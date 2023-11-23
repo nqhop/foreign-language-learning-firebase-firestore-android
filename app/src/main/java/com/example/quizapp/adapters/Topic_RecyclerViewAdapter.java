@@ -36,7 +36,12 @@ public class Topic_RecyclerViewAdapter extends RecyclerView.Adapter<Topic_Recycl
     @Override
     public void onBindViewHolder(@NonNull Topic_RecyclerViewAdapter.MyviewHolder holder, int position) {
         holder.textView.setText(topics.get(position).getName());
-//        Toast.makeText(context, topics.get(position).getName(), Toast.LENGTH_SHORT).show();
+        holder.textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Toast.makeText(context, topics.get(position).getName(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

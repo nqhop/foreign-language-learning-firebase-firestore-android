@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -72,6 +73,8 @@ public class HomeFragment extends Fragment {
     ArrayList<Topic> topicModels = new ArrayList<>();
     ArrayList<Vocab> vocabModels = new ArrayList<>();
     RecyclerView homeTopicRecycleView, homeVocabRecycleView;
+    TopicRepository topicRepository;
+    private String keyForder = "forder_name";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,21 +103,32 @@ public class HomeFragment extends Fragment {
         homeTopicRecycleView.setLayoutManager(layoutManagerForTopic);
         homeVocabRecycleView.setLayoutManager(layoutManagerForVocab);
 
-
-        // topic
-        setUpHomeTopicModels();
+        topicRepository = new TopicRepository();
 
         // vocab
         setUpHomeVocabModels();
 
-        fetchData();
+        fetchDataFromFirestore();
     }
 
-    private void fetchData() {
-        TopicRepository topicRepository = new TopicRepository();
-        topicRepository.getListTopic("foods");
-    }
+    private void fetchDataFromFirestore() {
 
+        topicRepository.getTopics().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                        ArrayList<String> topics = new ArrayList<>();
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                            topics.add(document.getData().get(keyForder).toString());
+                        }
+                        setUpHomeTopicModels(topics);
+                    }
+                }
+            }
+        });
+    }
 
     private void setUpHomeVocabModels() {
         String[] homeVocabsNameItem = getResources().getStringArray(R.array.vocabs);
@@ -125,11 +139,11 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void setUpHomeTopicModels(){
-        String[] homeTopicsNameItem = getResources().getStringArray(R.array.topics);
-        for (String topic: homeTopicsNameItem) {
+    private void setUpHomeTopicModels(ArrayList<String> data){
+        data.forEach((topic) -> {
             topicModels.add(new Topic(topic));
-        }
+        });
+
         Topic_RecyclerViewAdapter adapter = new Topic_RecyclerViewAdapter(getContext(), topicModels);
         homeTopicRecycleView.setAdapter(adapter);
     }

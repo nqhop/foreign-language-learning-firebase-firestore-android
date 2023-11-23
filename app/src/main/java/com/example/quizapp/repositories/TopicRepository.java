@@ -22,37 +22,28 @@ public class TopicRepository {
         topicCollection = firestore.collection("forder");
     }
 
-    public ArrayList<String> getListTopic(String topic) {
-        topicCollection.whereEqualTo("forder_name", topic)
+    public ArrayList<String> getListTopic() {
+        ArrayList<String> topics = new ArrayList<>();
+        topicCollection
             .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()
                         ) {
-                            Log.d("fetchData", document.getId() + "->" + document.getData());
+                            topics.add(document.getData().toString());
                         }
+                        Log.d("getListTopic", "OK");
                     } else {
-                        Log.d("fetchData", "Failed");
+                        Log.d("getListTopic", "Failed");
                     }
                 }
             });
-        return  null;
+        return  topics;
     }
 
-    public void test(){
-        topicCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                    for (QueryDocumentSnapshot document:task.getResult()
-                    ) {
-                        Log.d("fetchData", document.getId() + "->"+document.getData());
-                    }
-                }else{
-                    Log.d("fetchData", "Failed");
-                }
-            }
-        });
+//    asynchronous operation
+    public Task<QuerySnapshot> getTopics(){
+        return topicCollection.get();
     }
 }
