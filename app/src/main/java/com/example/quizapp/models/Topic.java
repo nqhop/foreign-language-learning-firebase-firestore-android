@@ -1,13 +1,28 @@
 package com.example.quizapp.models;
 
 public class Topic {
-    String name;
+    private String name;
+    private String id;
+
+
+    public Topic(String id, String name) {
+        this.name = name;
+        this.id = id;
+    }
 
     public String getName() {
         return name;
     }
 
-    public Topic(String name) {
+    public void setName(String name) {
         this.name = name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

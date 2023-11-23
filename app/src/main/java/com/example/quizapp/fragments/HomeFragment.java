@@ -32,6 +32,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -111,7 +114,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         setUpHomeVocabModels();
 
         fetchTopicFromFirestore();
-        fetchVocabFromFirestore();
+//        fetchVocabFromFirestore();
     }
 
     private void fetchTopicFromFirestore() {
@@ -122,9 +125,9 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                 if (task.isSuccessful()) {
                     QuerySnapshot querySnapshot = task.getResult();
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        ArrayList<String> topics = new ArrayList<>();
+                        Dictionary<String, String > topics = new Hashtable<>();
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            topics.add(document.getData().get(keyForder).toString());
+                            topics.put(document.getId(), (String) document.getData().get(keyForder));
                         }
                         setUpHomeTopicModels(topics);
                     }
@@ -146,10 +149,12 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         }
     }
 
-    private void setUpHomeTopicModels(ArrayList<String> data){
-        data.forEach((topic) -> {
-            topicModels.add(new Topic(topic));
-        });
+    private void setUpHomeTopicModels(Dictionary<String, String> dictionary){
+        Enumeration<String> keys = dictionary.keys();
+        while (keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            topicModels.add(new Topic(key, dictionary.get(key)));
+        }
 
         Topic_RecyclerViewAdapter adapter = new Topic_RecyclerViewAdapter(getContext(), topicModels, this);
         homeTopicRecycleView.setAdapter(adapter);
@@ -157,6 +162,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
 
     @Override
     public void onItemClick(int posotion) {
-        Log.d("onItemClick", "from home frament " + topicModels.get(posotion).getName());
+        Log.d("onItemClick", "from home frament " + topicModels.get(posotion).getId());
+        topicRepository.getVocabsByTopicName(topicModels.get(posotion).getId());
     }
 }

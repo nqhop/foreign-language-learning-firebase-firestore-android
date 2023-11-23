@@ -8,6 +8,7 @@ import com.example.quizapp.utils.FirebaseUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -15,9 +16,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class TopicRepository {
-    private CollectionReference topicCollection;
+    private CollectionReference topicCollection, topicSelected;
     private FirebaseFirestore firestore;
 
     public TopicRepository() {
@@ -75,8 +77,25 @@ public class TopicRepository {
         });
 //        Log.d("getVocabsByTopicName", topicCollection.get().toString());
     }
-    public void getVocabsByTopicName(String path) {
 
+    //    asynchronous operation
+    public Task<QuerySnapshot> getVocabsByTopicName(String path) {
+        String documentPath = "/forder/" + path;
 
+        DocumentReference documentRef = firestore.document(documentPath);
+
+        CollectionReference collectionRef = documentRef.collection("topic");
+
+        collectionRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                QuerySnapshot querySnapshot = task.getResult();
+                if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                    for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
+                        Log.d("onItemClick", "subDocumentData " +  documentSnapshot.getData().get("name"));
+                    }
+                }
+            }
+        });
+        return null;
     }
 }
