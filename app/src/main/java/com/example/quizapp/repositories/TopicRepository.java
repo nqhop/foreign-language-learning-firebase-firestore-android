@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.quizapp.models.Topic;
 import com.example.quizapp.utils.FirebaseUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -97,5 +98,10 @@ public class TopicRepository {
             }
         });
         return null;
+    }
+
+    public void addDummyTopics() {
+        CollectionReference topicsReference =  firestore.collection("mydemo");
+        topicsReference.add(new Topic("1", "name"));
     }
 }
