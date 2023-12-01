@@ -121,7 +121,23 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         setUpHomeVocabModels();
 
         fetchTopicFromFirestore();
+        fetchTopicFromFirestore2();
 //        fetchVocabFromFirestore();
+    }
+
+    private void fetchTopicFromFirestore2(){
+        TopicRepository.getDocuments("your_collection_name", new TopicRepository.FirestoreCallback<List<DocumentSnapshot>>() {
+            @Override
+            public void onSuccess(List<DocumentSnapshot> result) {
+                // Handle the retrieved document snapshots
+                // You can further process the data or pass it to another component
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                // Handle the failure case
+            }
+        });
     }
 
     private void fetchTopicFromFirestore() {

@@ -1,5 +1,6 @@
 package com.example.quizapp.repositories;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,55 @@ import java.util.List;
 import java.util.Map;
 
 public class TopicRepository {
+    public interface FirestoreCallback<T> {
+        void onSuccess(T result);
+        void onFailure(String errorMessage);
+    }
+    public static void getDocuments(String collectionName, FirestoreCallback<List<DocumentSnapshot>> callback) {
+        FirestoreAsyncTask asyncTask = new FirestoreAsyncTask(callback);
+        asyncTask.execute(collectionName);
+    }
+    private static class FirestoreAsyncTask extends AsyncTask<String, Void, List<DocumentSnapshot>> {
+
+        private FirestoreCallback<List<DocumentSnapshot>> callback;
+
+        public FirestoreAsyncTask(FirestoreCallback<List<DocumentSnapshot>> callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        protected List<DocumentSnapshot> doInBackground(String... params) {
+            String collectionName = params[0];
+
+            // Retrieve data from Firestore
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            CollectionReference collectionRef = db.collection(collectionName);
+
+            try {
+                QuerySnapshot querySnapshot = collectionRef.get().getResult();
+                return querySnapshot.getDocuments();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<DocumentSnapshot> documentSnapshots) {
+            if (documentSnapshots != null) {
+                callback.onSuccess(documentSnapshots);
+            } else {
+                callback.onFailure("Failed to retrieve data from Firestore.");
+            }
+        }
+    }
+
+
+
+
+
+
+
     private CollectionReference topicCollection, topicSelected;
     private FirebaseFirestore firestore;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -36,24 +86,24 @@ public class TopicRepository {
     public ArrayList<String> getListTopic() {
         ArrayList<String> topics = new ArrayList<>();
         topicCollection
-            .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()
-                        ) {
-                            topics.add(document.getData().toString());
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()
+                            ) {
+                                topics.add(document.getData().toString());
+                            }
+                            Log.d("getListTopic", "OK");
+                        } else {
+                            Log.d("getListTopic", "Failed");
                         }
-                        Log.d("getListTopic", "OK");
-                    } else {
-                        Log.d("getListTopic", "Failed");
                     }
-                }
-            });
+                });
         return  topics;
     }
 
-//    asynchronous operation
+    //    asynchronous operation
     public Task<QuerySnapshot> getTopics(){
         return topicCollection.get();
     }
@@ -117,20 +167,20 @@ public class TopicRepository {
         // below query just for test
         DocumentReference docRef = db.document(path);
         docRef.get()
-            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if (documentSnapshot.exists()) {
-                        // Document exists, retrieve its data
-                        Map<String, Object> data = documentSnapshot.getData();
-                        // Process the retrieved data
-                        Log.d("getListVocab", (String) data.get("forder_name"));
-                    } else {
-                        // Document doesn't exist
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            // Document exists, retrieve its data
+                            Map<String, Object> data = documentSnapshot.getData();
+                            // Process the retrieved data
+                            Log.d("getListVocab", (String) data.get("forder_name"));
+                        } else {
+                            // Document doesn't exist
 
+                        }
                     }
-                }
-            });
+                });
 
         ArrayList<Vocab> vocabs = new ArrayList<>();
         firestore.collection(path + "/topic").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
