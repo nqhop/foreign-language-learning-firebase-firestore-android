@@ -1,5 +1,6 @@
 package com.example.quizapp.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -81,9 +83,11 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
     TopicRepository topicRepository;
     private String keyForder = "forder_name";
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("Fragment", "onCreate");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -94,13 +98,16 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        Log.d("Fragment", "onCreateView");
 //         Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d("Fragment", "onViewCreated");
         homeTopicRecycleView = view.findViewById(R.id.homeTopicRecycleView);
         homeVocabRecycleView = view.findViewById(R.id.homeVocabRecycleView);
         LinearLayoutManager layoutManagerForTopic = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -127,7 +134,9 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
                         Dictionary<String, String > topics = new Hashtable<>();
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            topics.put(document.getId(), (String) document.getData().get(keyForder));
+                            Log.d("fetchTopicFromFirestore", document.getReference().getPath());
+                            Log.d("fetchTopicFromFirestore", "id " + document.getId());
+                            topics.put(document.getReference().getPath(), (String) document.getData().get(keyForder));
                         }
                         setUpHomeTopicModels(topics);
                     }
@@ -162,7 +171,12 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
 
     @Override
     public void onItemClick(int posotion) {
-        Log.d("onItemClick", "from home frament " + topicModels.get(posotion).getId());
-        topicRepository.getVocabsByTopicName(topicModels.get(posotion).getId());
+        Log.d("getListVocab", "from home frament " + topicModels.get(posotion).getId());
+        setVocabList(topicModels.get(posotion).getId());
+//        topicRepository.getVocabsByTopicName(topicModels.get(posotion).getId());
+    }
+    public void setVocabList(String path){
+        List<Vocab> vocabs = topicRepository.getListVocab(path);
+        Log.d("getListVocab", "vocabs " + vocabs.size());
     }
 }
