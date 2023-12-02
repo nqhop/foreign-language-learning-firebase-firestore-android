@@ -1,5 +1,7 @@
 package com.example.quizapp.repositories;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -9,7 +11,6 @@ import com.example.quizapp.models.Topic;
 import com.example.quizapp.models.Vocab;
 import com.example.quizapp.utils.FirebaseUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -23,43 +24,83 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 public class TopicRepository {
     public interface FirestoreCallback<T> {
         void onSuccess(T result);
         void onFailure(String errorMessage);
     }
-    public static void getDocuments(String collectionName, FirestoreCallback<List<DocumentSnapshot>> callback) {
-        FirestoreAsyncTask asyncTask = new FirestoreAsyncTask(callback);
+    public static void getDocuments(Context context, String collectionName, FirestoreCallback<List<Topic>> callback) {
+        FirestoreAsyncTask asyncTask = new FirestoreAsyncTask(context, callback);
         asyncTask.execute(collectionName);
     }
-    private static class FirestoreAsyncTask extends AsyncTask<String, Void, List<DocumentSnapshot>> {
+    private static class FirestoreAsyncTask extends AsyncTask<String, Void, List<Topic>> {
 
-        private FirestoreCallback<List<DocumentSnapshot>> callback;
+        private FirestoreCallback<List<Topic>> callback;
+        private Context context;
+        ProgressDialog progressDialog;
+        FirebaseFirestore firestore = FirebaseUtils.getFirestoreInstance();
 
-        public FirestoreAsyncTask(FirestoreCallback<List<DocumentSnapshot>> callback) {
+
+
+        public FirestoreAsyncTask(Context context, FirestoreCallback<List<Topic>> callback) {
             this.callback = callback;
+            this.context = context;
         }
 
         @Override
-        protected List<DocumentSnapshot> doInBackground(String... params) {
+        protected List<Topic> doInBackground(String... params) {
+            Log.d("AsyncTask", "doInBackground");
             String collectionName = params[0];
+            CollectionReference topicCollection = firestore.collection(collectionName);
 
-            // Retrieve data from Firestore
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            CollectionReference collectionRef = db.collection(collectionName);
+
 
             try {
-                QuerySnapshot querySnapshot = collectionRef.get().getResult();
-                return querySnapshot.getDocuments();
-            } catch (Exception e) {
+                List<Topic> topics = new ArrayList<>();
+                CountDownLatch latch = new CountDownLatch(1);
+                topicCollection
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()
+                                ) {
+                                    topics.add(new Topic(document.getReference().getPath(), (String) document.getData().get("forder_name")));
+                                }
+                                Log.d("AsyncTask", "OK");
+                                latch.countDown();
+                            } else {
+                                Log.d("AsyncTask", "Failed");
+                                latch.countDown();
+                            }
+                        }
+                    });
+                Log.d("AsyncTask", "onCompleteListener");
+                latch.await();
+//                Thread.sleep(5000);
+                return topics;
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+            }
+            catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
         }
 
         @Override
-        protected void onPostExecute(List<DocumentSnapshot> documentSnapshots) {
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(context,
+                    "ProgressDialog",
+                    "Wait for "+"5" +" seconds");
+        }
+
+        @Override
+        protected void onPostExecute(List<Topic> documentSnapshots) {
+            progressDialog.dismiss();
+            Log.d("AsyncTask", "onPostExecute");
             if (documentSnapshots != null) {
                 callback.onSuccess(documentSnapshots);
             } else {
@@ -67,9 +108,6 @@ public class TopicRepository {
             }
         }
     }
-
-
-
 
 
 

@@ -81,6 +81,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
     ArrayList<Vocab> vocabModels = new ArrayList<>();
     RecyclerView homeTopicRecycleView, homeVocabRecycleView;
     TopicRepository topicRepository;
+    private boolean isFragmentCreated = false;
     private String keyForder = "forder_name";
 
 
@@ -107,34 +108,41 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d("Fragment", "onViewCreated");
-        homeTopicRecycleView = view.findViewById(R.id.homeTopicRecycleView);
-        homeVocabRecycleView = view.findViewById(R.id.homeVocabRecycleView);
-        LinearLayoutManager layoutManagerForTopic = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        LinearLayoutManager layoutManagerForVocab = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        homeTopicRecycleView.setLayoutManager(layoutManagerForTopic);
-        homeVocabRecycleView.setLayoutManager(layoutManagerForVocab);
+        if (isFragmentCreated)
+            return;
+        else {
+            isFragmentCreated = true;
+            Log.d("Fragment", "onViewCreated");
+            homeTopicRecycleView = view.findViewById(R.id.homeTopicRecycleView);
+            homeVocabRecycleView = view.findViewById(R.id.homeVocabRecycleView);
+            LinearLayoutManager layoutManagerForTopic = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+            LinearLayoutManager layoutManagerForVocab = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+            homeTopicRecycleView.setLayoutManager(layoutManagerForTopic);
+            homeVocabRecycleView.setLayoutManager(layoutManagerForVocab);
 
-        topicRepository = new TopicRepository();
+            topicRepository = new TopicRepository();
 
-        // vocab
-        setUpHomeVocabModels();
+            // vocab
+            setUpHomeVocabModels();
 
-        fetchTopicFromFirestore();
-        fetchTopicFromFirestore2();
-//        fetchVocabFromFirestore();
+            fetchTopicFromFirestore();
+            fetchTopicFromFirestore2();
+            //        fetchVocabFromFirestore();
+        }
     }
 
     private void fetchTopicFromFirestore2(){
-        TopicRepository.getDocuments("your_collection_name", new TopicRepository.FirestoreCallback<List<DocumentSnapshot>>() {
+        TopicRepository.getDocuments(getContext(), "forder", new TopicRepository.FirestoreCallback<List<Topic>>() {
             @Override
-            public void onSuccess(List<DocumentSnapshot> result) {
+            public void onSuccess(List<Topic> result) {
+                Log.d("AsyncTask", "onSuccessL " + result.size());
                 // Handle the retrieved document snapshots
                 // You can further process the data or pass it to another component
             }
 
             @Override
             public void onFailure(String errorMessage) {
+                Log.d("AsyncTask", errorMessage);
                 // Handle the failure case
             }
         });
