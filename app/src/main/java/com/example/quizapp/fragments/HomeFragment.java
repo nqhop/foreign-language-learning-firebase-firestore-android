@@ -1,5 +1,6 @@
 package com.example.quizapp.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -35,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -74,16 +77,21 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         return fragment;
     }
 
+    private FirebaseFirestore firestore;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private
     ArrayList<Topic> topicModels = new ArrayList<>();
     ArrayList<Vocab> vocabModels = new ArrayList<>();
     RecyclerView homeTopicRecycleView, homeVocabRecycleView;
     TopicRepository topicRepository;
+    private boolean isFragmentCreated = false;
     private String keyForder = "forder_name";
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("Fragment", "onCreate");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -94,13 +102,17 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        Log.d("Fragment", "onCreateView");
 //         Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        firestore = FirebaseUtils.getFirestoreInstance();
+        Log.d("Fragment", "onViewCreated");
         homeTopicRecycleView = view.findViewById(R.id.homeTopicRecycleView);
         homeVocabRecycleView = view.findViewById(R.id.homeVocabRecycleView);
         LinearLayoutManager layoutManagerForTopic = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -113,8 +125,24 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         // vocab
         setUpHomeVocabModels();
 
-        fetchTopicFromFirestore();
-//        fetchVocabFromFirestore();
+//        fetchTopicFromFirestore();
+        fetchTopicFromFirestore2();
+
+    }
+
+    private void fetchTopicFromFirestore2(){
+        TopicRepository.getTopics(getContext(), "forder", new TopicRepository.FirestoreCallback<List<Topic>>() {
+            @Override
+            public void onSuccess(List<Topic> result) {
+                Log.d("AsyncTask", "onSuccessL " + result.size());
+                setUpHomeTopicModels(result);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.d("AsyncTask", errorMessage);
+            }
+        });
     }
 
     private void fetchTopicFromFirestore() {
@@ -127,9 +155,11 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
                         Dictionary<String, String > topics = new Hashtable<>();
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            topics.put(document.getId(), (String) document.getData().get(keyForder));
+                            Log.d("fetchTopicFromFirestore", document.getReference().getPath());
+                            Log.d("fetchTopicFromFirestore", "id " + document.getId());
+                            topics.put(document.getReference().getPath(), (String) document.getData().get(keyForder));
                         }
-                        setUpHomeTopicModels(topics);
+//                        setUpHomeTopicModels(topics);
                     }
                 }
             }
@@ -149,20 +179,37 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         }
     }
 
-    private void setUpHomeTopicModels(Dictionary<String, String> dictionary){
-        Enumeration<String> keys = dictionary.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
-            topicModels.add(new Topic(key, dictionary.get(key)));
-        }
+//    private void setUpHomeTopicModels(Dictionary<String, String> dictionary){
+    private void setUpHomeTopicModels(List<Topic> topicsopics){
 
+        topicsopics.forEach(topic -> topicModels.add(topic));
         Topic_RecyclerViewAdapter adapter = new Topic_RecyclerViewAdapter(getContext(), topicModels, this);
         homeTopicRecycleView.setAdapter(adapter);
     }
 
     @Override
     public void onItemClick(int posotion) {
-        Log.d("onItemClick", "from home frament " + topicModels.get(posotion).getId());
-        topicRepository.getVocabsByTopicName(topicModels.get(posotion).getId());
+        String path = topicModels.get(posotion).getId();
+        Log.d("getListVocab", "from home frament " + topicModels.get(posotion).getId());
+
+        vocabModels.clear();
+        firestore.collection(path + "/topic").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        String vocabPath = document.getReference().getPath() + "vocab";
+                        String vocabName = document.getData().toString();
+                        Log.d("getListVocab", vocabPath);
+                        Log.d("getListVocab", vocabName);
+
+                        vocabModels.add(new Vocab((String) document.getData().get("name"), document.getReference().getPath()));
+                    }
+                    Vocab_RecyclerViewAdapter vocabAdapter = new Vocab_RecyclerViewAdapter(getContext(), vocabModels);
+                    homeVocabRecycleView.setAdapter(vocabAdapter);
+
+                }
+            }
+        });
     }
 }

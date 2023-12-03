@@ -2,13 +2,23 @@ package com.example.quizapp.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.quizapp.R;
+import com.example.quizapp.databinding.ActivityMainBinding;
+import com.example.quizapp.databinding.FragmentSettingsBinding;
+import com.example.quizapp.repositories.TopicRepository;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,6 +58,8 @@ public class SettingsFragment extends Fragment {
         return fragment;
     }
 
+    TopicRepository topicRepository;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,5 +74,40 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_settings, container, false);
+    }
+
+//    FragmentSettingsBinding fragmentSettingsBinding;
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+//        fragmentSettingsBinding = FragmentSettingsBinding.inflate(getLayoutInflater());
+        setHasOptionsMenu(true);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        assert activity != null;
+        activity.getSupportActionBar().show();
+        topicRepository = new TopicRepository();
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_settings, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.addTopic){
+
+            Toast.makeText(getActivity(), "Add topics", Toast.LENGTH_SHORT).show();
+            onAddTopicsClicked();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void onAddTopicsClicked() {
+        // add dummy topics
+        topicRepository.addDummyTopics();
     }
 }
