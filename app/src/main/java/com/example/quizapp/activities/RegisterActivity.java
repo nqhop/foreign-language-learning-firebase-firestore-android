@@ -7,10 +7,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.quizapp.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -18,10 +24,16 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister;
     private TextView txtBackToLogin;
 
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         etFullName = findViewById(R.id.etFullName);
         etEmail = findViewById(R.id.etEmailRegister);
@@ -43,9 +55,24 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                Toast.makeText(RegisterActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                finish();
+                // Đăng ký người dùng mới bằng email và mật khẩu
+                mAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(RegisterActivity.this, task -> {
+                            if (task.isSuccessful()) {
+                                // Đăng ký thành công
+                                Toast.makeText(RegisterActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+
+                                // Lưu thông tin người dùng vào Firestore
+                                saveUserDataToFirestore(fullName, email,password);
+
+                                // Chuyển đến màn hình đăng nhập
+                                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                finish();
+                            } else {
+                                // Đăng ký thất bại
+                                Toast.makeText(RegisterActivity.this, "Đăng ký thất bại", Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
 
@@ -57,5 +84,26 @@ public class RegisterActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void saveUserDataToFirestore(String fullName, String email,String password) {
+        // Tạo một đối tượng Map để lưu thông tin người dùng
+        Map<String, Object> user = new HashMap<>();
+        user.put("fullName", fullName);
+        user.put("email", email);
+        user.put("password", password);
+
+        // Lưu thông tin người dùng vào Firestore
+        db.collection("users")
+                .document(mAuth.getCurrentUser().getUid())
+                .set(user)
+                .addOnSuccessListener(aVoid -> {
+                    // Xử lý khi lưu dữ liệu thành công (nếu cần)
+                })
+                .addOnFailureListener(e -> {
+                    // Hiển thị lỗi
+                    Toast.makeText(RegisterActivity.this, "Đăng ký thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+
     }
 }

@@ -2,6 +2,7 @@
     <string name="app_name">quiz app</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="default_web_client_id">283468462448-rqslm0qfbg4piadc6if1so4srg6mqsdv.apps.googleusercontent.com</string>
     <string-array name="topics">
         <item>Transport</item>
         <item>Education</item>
