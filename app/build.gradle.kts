@@ -57,6 +57,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database:19.2.0")
     implementation("com.google.firebase:firebase-firestore-ktx:21.6.0")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 
 
 }

@@ -31,7 +31,7 @@ public class TopicRepository {
         void onSuccess(T result);
         void onFailure(String errorMessage);
     }
-    public static void getDocuments(Context context, String collectionName, FirestoreCallback<List<Topic>> callback) {
+    public static void getTopics(Context context, String collectionName, FirestoreCallback<List<Topic>> callback) {
         FirestoreAsyncTask asyncTask = new FirestoreAsyncTask(context, callback);
         asyncTask.execute(collectionName);
     }
@@ -79,10 +79,7 @@ public class TopicRepository {
                     });
                 Log.d("AsyncTask", "onCompleteListener");
                 latch.await();
-//                Thread.sleep(5000);
                 return topics;
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -94,7 +91,7 @@ public class TopicRepository {
         protected void onPreExecute() {
             progressDialog = ProgressDialog.show(context,
                     "ProgressDialog",
-                    "Wait for "+"5" +" seconds");
+                    "Loading");
         }
 
         @Override
@@ -198,8 +195,8 @@ public class TopicRepository {
         topicsReference.add(new Topic("1", "name"));
     }
 
-
-    public List<Vocab> getListVocab(String path) {
+    // quite cumbersome, so I don't use this function
+    public List<Vocab> getListVocab(String path) throws InterruptedException {
         Log.d("getListVocab", "from: " + path);
 
         // below query just for test
@@ -220,19 +217,32 @@ public class TopicRepository {
                     }
                 });
 
-        ArrayList<Vocab> vocabs = new ArrayList<>();
-        firestore.collection(path + "/topic").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                    for (QueryDocumentSnapshot document : task.getResult()){
-                        Log.d("getListVocab", (String) document.getData().get("name"));
-                        Log.d("getListVocab", (String) document.getReference().getPath());
-                        vocabs.add(new Vocab((String) document.getData().get("name"), document.getReference().getPath()));
+        try {
+            List<Vocab> vocabs = new ArrayList<>();
+            CountDownLatch latch = new CountDownLatch(1);
+            firestore.collection(path + "/topic").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.d("getListVocab", (String) document.getData().get("name"));
+                            Log.d("getListVocab", (String) document.getReference().getPath());
+                            vocabs.add(new Vocab((String) document.getData().get("name"), document.getReference().getPath()));
+                        }
+                        latch.countDown();
+                    } else {
+                        latch.countDown();
                     }
+
                 }
-            }
-        });
-        return vocabs;
+            });
+            latch.wait();
+            return vocabs;
+        } catch (InterruptedException e) {
+            return null;
+        } catch (Exception e) {
+            Log.d("getListVocab", "Exception " + e.toString());
+            return null;
+        }
     }
 }

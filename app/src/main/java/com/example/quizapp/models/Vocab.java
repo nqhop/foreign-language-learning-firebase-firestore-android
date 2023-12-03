@@ -2,6 +2,7 @@ package com.example.quizapp.models;
 
 public class Vocab {
     String name, id;
+    int count;
 
     public Vocab(String name, String id) {
         this.name = name;

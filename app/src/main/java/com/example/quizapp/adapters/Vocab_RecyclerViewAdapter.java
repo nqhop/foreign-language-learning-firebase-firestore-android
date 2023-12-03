@@ -28,7 +28,7 @@ public class Vocab_RecyclerViewAdapter extends RecyclerView.Adapter<Vocab_Recycl
     @Override
     public Vocab_RecyclerViewAdapter.MyviewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.card_view, parent, false);
+        View view = inflater.inflate(R.layout.table_view, parent, false);
         return new Vocab_RecyclerViewAdapter.MyviewHolder(view);
     }
 
@@ -44,11 +44,12 @@ public class Vocab_RecyclerViewAdapter extends RecyclerView.Adapter<Vocab_Recycl
     }
 
     public static class MyviewHolder extends RecyclerView.ViewHolder{
-        TextView textView;
+        TextView textView, cound;
 
         public MyviewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.textView10);
+            cound = itemView.findViewById(R.id.textView13);
             itemView.setOnClickListener(v -> {
             });
         }
