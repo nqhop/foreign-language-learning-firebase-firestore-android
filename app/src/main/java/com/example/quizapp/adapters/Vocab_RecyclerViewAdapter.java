@@ -49,6 +49,10 @@ public class Vocab_RecyclerViewAdapter extends RecyclerView.Adapter<Vocab_Recycl
         public MyviewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.textView10);
+            itemView.setOnClickListener(v -> {
+            });
         }
+
     }
+
 }

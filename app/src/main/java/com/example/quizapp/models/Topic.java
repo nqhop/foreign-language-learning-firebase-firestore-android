@@ -1,9 +1,7 @@
 package com.example.quizapp.models;
 
 public class Topic {
-    private String name;
-    private String id;
-
+    private String name, id;
 
     public Topic(String id, String name) {
         this.name = name;
