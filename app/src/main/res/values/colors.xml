@@ -7,6 +7,7 @@
     <color name="search_box_bg">#F0ECFF</color>
     <color name="ghost_white">#F8F8FF</color>
     <color name="border_card">#878787</color>
+    <color name="colorPrimary">#536474</color>
 
 
 </resources>

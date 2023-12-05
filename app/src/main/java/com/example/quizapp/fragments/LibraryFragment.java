@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.widget.Button;
 
 import com.example.quizapp.R;
 import com.example.quizapp.activities.VocabActivity;
+import com.example.quizapp.adapters.CustomPagerAdapter;
+import com.google.android.material.tabs.TabLayout;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,12 +65,16 @@ public class LibraryFragment extends Fragment {
     }
 
     Button btnEnterVocab;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
         btnEnterVocab = rootView.findViewById(R.id.btnEnterVocab);
+        viewPager = rootView.findViewById(R.id.viewPager);
+        tabLayout = rootView.findViewById(R.id.tabLayout);
         btnEnterVocab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,6 +82,16 @@ public class LibraryFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+
+        CustomPagerAdapter adapter = new CustomPagerAdapter(getActivity().getSupportFragmentManager());
+        adapter.addFragment(new PageFragment(), "Page 1");
+        adapter.addFragment(new PageFragment(), "Page 2");
+        adapter.addFragment(new PageFragment(), "Page 3");
+
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+
 
 
         // Inflate the layout for this fragment
