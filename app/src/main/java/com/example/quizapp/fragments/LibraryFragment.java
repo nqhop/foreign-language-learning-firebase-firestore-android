@@ -3,6 +3,8 @@ package com.example.quizapp.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -13,7 +15,7 @@ import android.widget.Button;
 
 import com.example.quizapp.R;
 import com.example.quizapp.activities.VocabActivity;
-import com.example.quizapp.adapters.CustomPagerAdapter;
+import com.example.quizapp.adapters.LibraryPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 /**
@@ -72,6 +74,14 @@ public class LibraryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.getSupportActionBar().show();
+        if (activity != null) {
+            ActionBar actionBar = activity.getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setTitle("Thư viện");
+            }
+        }
         btnEnterVocab = rootView.findViewById(R.id.btnEnterVocab);
         viewPager = rootView.findViewById(R.id.viewPager);
         tabLayout = rootView.findViewById(R.id.tabLayout);
@@ -84,10 +94,10 @@ public class LibraryFragment extends Fragment {
         });
 
 
-        CustomPagerAdapter adapter = new CustomPagerAdapter(getActivity().getSupportFragmentManager());
-        adapter.addFragment(new PageFragment(), "Page 1");
-        adapter.addFragment(new PageFragment(), "Page 2");
-        adapter.addFragment(new PageFragment(), "Page 3");
+        LibraryPagerAdapter adapter = new LibraryPagerAdapter(getActivity().getSupportFragmentManager());
+        adapter.addFragment(new PageFragmentTopic(), "Học phần");
+        adapter.addFragment(new PageFragmentDirectory(), "Thư mục");
+        adapter.addFragment(new PageFragmentDirectory(), "Lớp học");
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);

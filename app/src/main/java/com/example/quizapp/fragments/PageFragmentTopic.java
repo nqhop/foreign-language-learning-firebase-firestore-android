@@ -9,9 +9,9 @@ import androidx.fragment.app.Fragment;
 
 import com.example.quizapp.R;
 
-public class PageFragment extends Fragment {
+public class PageFragmentTopic extends Fragment {
 
-    public PageFragment() {
+    public PageFragmentTopic() {
         // Required empty public constructor
     }
 
