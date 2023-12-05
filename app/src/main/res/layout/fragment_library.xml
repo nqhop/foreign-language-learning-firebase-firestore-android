@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.LibraryFragment"
-    android:background="#536645">
+    android:background="@color/light_blue">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -15,11 +16,23 @@
         android:layout_height="wrap_content"
         android:text="demo Flashcard" />
 
-    <TextView
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Library frament"
-        android:gravity="center"
-        android:textSize="20dp"
-        />
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/ghost_white"
+        android:minHeight="?attr/actionBarSize"
+        app:tabIndicatorColor="@android:color/black"
+        app:tabIndicatorHeight="2dp"
+        app:tabSelectedTextColor="@android:color/black"
+        app:tabTextColor="@android:color/darker_gray" />
+
+
+
 </FrameLayout>

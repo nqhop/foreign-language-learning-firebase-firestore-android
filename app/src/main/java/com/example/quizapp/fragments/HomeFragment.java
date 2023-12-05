@@ -1,10 +1,12 @@
 package com.example.quizapp.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -89,6 +91,11 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
 
 
     @Override
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("Fragment", "onCreate");
@@ -103,6 +110,8 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
                              Bundle savedInstanceState) {
 
         Log.d("Fragment", "onCreateView");
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.getSupportActionBar().hide();
 //         Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }

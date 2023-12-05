@@ -20,10 +20,7 @@
             android:name=".activities.LoginActivity"
             android:exported="true"
             android:label="LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         <activity
             android:name=".activities.profileActivity"
@@ -34,9 +31,13 @@
 
         <activity
             android:name=".activities.MainActivity"
-            android:exported="false">
+            android:exported="true"
+            >
             <!-- Xóa intent-filter của MainActivity nếu nó không phải là màn hình khởi đầu -->
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
