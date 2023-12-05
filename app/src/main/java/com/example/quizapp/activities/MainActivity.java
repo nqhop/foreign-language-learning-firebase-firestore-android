@@ -1,5 +1,6 @@
 package com.example.quizapp.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -14,6 +15,16 @@ import com.example.quizapp.fragments.LibraryFragment;
 import com.example.quizapp.R;
 import com.example.quizapp.fragments.SettingsFragment;
 import com.example.quizapp.databinding.ActivityMainBinding;
+import com.example.quizapp.utils.FirebaseUtils;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firestore.v1.StructuredQuery;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        demoDatabase();
         binding = ActivityMainBinding.inflate(getLayoutInflater());
 //        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
@@ -62,5 +75,15 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
         }
+    }
+
+    // Hop's demo
+    private void demoDatabase() {
+        FirebaseFirestore firestore = FirebaseUtils.getFirestoreInstance();
+        CollectionReference collectionRef = firestore.collection("usersDemo");
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("age", 12);
+        collectionRef.document("zmyQmvdLc3DRhAAxlMOG").update(updates);
     }
 }
