@@ -32,6 +32,7 @@ public class PageFragmentTopic extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("Library", "PageFragmentTopic");
         firestore = FirebaseUtils.getFirestoreInstance();
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_page_topic, container, false);
