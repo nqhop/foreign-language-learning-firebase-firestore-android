@@ -71,6 +71,7 @@ public class LibraryFragment extends Fragment {
     Button btnEnterVocab;
     private ViewPager viewPager;
     private TabLayout tabLayout;
+    LibraryPagerAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -96,7 +97,7 @@ public class LibraryFragment extends Fragment {
         });
 
         Log.d("Library", "----------LibraryFragment----------");
-        LibraryPagerAdapter adapter = new LibraryPagerAdapter(getActivity().getSupportFragmentManager());
+        adapter = new LibraryPagerAdapter(getActivity().getSupportFragmentManager());
         adapter.addFragment(new PageFragmentTopic(), "Học phần");
         adapter.addFragment(new PageFragmentDirectory(), "Thư mục");
         adapter.addFragment(new PageFragmentClasses(), "Lớp học");
@@ -121,5 +122,11 @@ public class LibraryFragment extends Fragment {
 //        });
         // Inflate the layout for this fragment
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged();
     }
 }

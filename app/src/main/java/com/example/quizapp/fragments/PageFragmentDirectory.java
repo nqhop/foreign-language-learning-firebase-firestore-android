@@ -9,6 +9,7 @@ package com.example.quizapp.fragments;
         import android.view.ViewGroup;
 
         import androidx.annotation.NonNull;
+        import androidx.annotation.Nullable;
         import androidx.appcompat.app.AppCompatActivity;
         import androidx.fragment.app.Fragment;
         import androidx.recyclerview.widget.LinearLayoutManager;
@@ -49,19 +50,17 @@ public class PageFragmentDirectory extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("Library", "PageFragmentDirectory");
+
         View rootView = inflater.inflate(R.layout.fragment_page_directory, container, false);
-        myDirectories = new ArrayList<>();
-        fragmentPageDirectoryRecyclerView = rootView.findViewById(R.id.fragmentPageDirectoryRecyclerView);
-        myDirectories.add(new TopicDirectory("foods" , new User("hop", "hop@gamil.com", "123")));
-        myDirectories.add(new TopicDirectory("foods" , new User("hop", "hop@gamil.com", "123")));
-
-        LibraryDirectoryAdapter libraryDirectoryAdapter = new LibraryDirectoryAdapter(getContext(), myDirectories);
-        fragmentPageDirectoryRecyclerView.setAdapter(libraryDirectoryAdapter);
-        fragmentPageDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-
-
-
         firestore = FirebaseUtils.getFirestoreInstance();
+        fragmentPageDirectoryRecyclerView = rootView.findViewById(R.id.fragmentPageDirectoryRecyclerView);
+
+        return inflater.inflate(R.layout.fragment_page_directory, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         DocumentReference collectionRef = firestore.collection("users").document(id_user);
         collectionRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -69,16 +68,22 @@ public class PageFragmentDirectory extends Fragment {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     user = new User((String) documentSnapshot.getData().get("fullName"), (String) documentSnapshot.getData().get("email"), id_user);
-                    Log.d("GetUserInfo", user.toString());
-//                    fetchDerectory(rootView.getContext());
+                    Log.d("onViewCreated", user.toString());
+                    fetchDerectory(view.getContext());
                 }
             }
         });
 
 
 
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_page_directory, container, false);
+        myDirectories = new ArrayList<>();
+        fragmentPageDirectoryRecyclerView = view.findViewById(R.id.fragmentPageDirectoryRecyclerView);
+//        myDirectories.add(new TopicDirectory("foods" , new User("hop", "hop@gamil.com", "123")));
+//        myDirectories.add(new TopicDirectory("foods" , new User("hop", "hop@gamil.com", "123")));
+
+//        LibraryDirectoryAdapter libraryDirectoryAdapter = new LibraryDirectoryAdapter(getContext(), myDirectories);
+//        fragmentPageDirectoryRecyclerView.setAdapter(libraryDirectoryAdapter);
+//        fragmentPageDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
 
     private void fetchDerectory(Context c) {
@@ -100,9 +105,9 @@ public class PageFragmentDirectory extends Fragment {
                 Log.d("dataUser","myDirectories size " + myDirectories.size());
                 Log.d("dataUser","user name " + user.getName());
 
-//                LibraryDirectoryAdapter libraryDirectoryAdapter = new LibraryDirectoryAdapter(getContext(), myDirectories);
-//                fragmentPageDirectoryRecyclerView.setAdapter(libraryDirectoryAdapter);
-//                fragmentPageDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(c));
+                LibraryDirectoryAdapter libraryDirectoryAdapter = new LibraryDirectoryAdapter(getContext(), myDirectories);
+                fragmentPageDirectoryRecyclerView.setAdapter(libraryDirectoryAdapter);
+                fragmentPageDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(c));
             }
         });
     }
