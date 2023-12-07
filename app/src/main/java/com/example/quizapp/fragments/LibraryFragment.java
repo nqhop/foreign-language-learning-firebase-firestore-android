@@ -8,10 +8,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.quizapp.R;
 import com.example.quizapp.activities.VocabActivity;
@@ -69,6 +71,7 @@ public class LibraryFragment extends Fragment {
     Button btnEnterVocab;
     private ViewPager viewPager;
     private TabLayout tabLayout;
+    LibraryPagerAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,18 +96,37 @@ public class LibraryFragment extends Fragment {
             }
         });
 
-
-        LibraryPagerAdapter adapter = new LibraryPagerAdapter(getActivity().getSupportFragmentManager());
+        Log.d("Library", "----------LibraryFragment----------");
+        adapter = new LibraryPagerAdapter(getActivity().getSupportFragmentManager());
         adapter.addFragment(new PageFragmentTopic(), "Học phần");
         adapter.addFragment(new PageFragmentDirectory(), "Thư mục");
-        adapter.addFragment(new PageFragmentDirectory(), "Lớp học");
+        adapter.addFragment(new PageFragmentClasses(), "Lớp học");
+        Log.d("Library", "size: " + adapter.getCount());
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+        PageFragmentClasses fragmentClasses = (PageFragmentClasses) adapter.getItem(2);
+
+        if(fragmentClasses.isAdded() && fragmentClasses.getView() != null){
+            TextView textView = fragmentClasses.getView().findViewById(R.id.textView15);
+            textView.setText("Updated title");
+        }
 
 
-
+//        fragmentClasses.getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                TextView textView = fragmentClasses.getView().findViewById(R.id.textView15);
+//                textView.setText("Updated title");
+//            }
+//        });
         // Inflate the layout for this fragment
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged();
     }
 }

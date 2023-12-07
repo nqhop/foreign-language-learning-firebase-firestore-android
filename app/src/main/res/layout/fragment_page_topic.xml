@@ -5,26 +5,54 @@
     android:layout_height="match_parent"
     android:background="@color/light_blue">
 
-    <Button
-        android:id="@+id/filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="75dp"
-        android:text="Đã tạo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <SearchView
-        android:id="@+id/searchView"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:iconifiedByDefault="false"
-        android:padding="2dp"
-        android:queryHint="Tìm kiếm"
+        android:layout_height="match_parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filter" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="75dp"
+>
+       <androidx.constraintlayout.widget.ConstraintLayout
+           android:orientation="vertical"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent">
 
+           <TextView
+               android:layout_marginStart="8dp"
+               android:paddingHorizontal="8dp"
+               android:paddingVertical="6dp"
+               android:background="@drawable/rectangle_btn"
+               android:drawableRight="@drawable/baseline_keyboard_arrow_down_24"
+               android:id="@+id/filter"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="Đã tạo"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toTopOf="parent" />
+
+           <SearchView
+               android:id="@+id/searchView"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:iconifiedByDefault="false"
+               android:padding="2dp"
+               android:queryHint="Tìm kiếm"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toBottomOf="@+id/filter" />
+
+           <androidx.recyclerview.widget.RecyclerView
+               android:id="@+id/fragmentPageTopicRecyclerView"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:orientation="vertical"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toBottomOf="@+id/searchView" />
+       </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
