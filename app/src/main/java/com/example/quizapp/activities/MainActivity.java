@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.quizapp.fragments.HomeFragment;
 import com.example.quizapp.fragments.LibraryFragment;
@@ -17,27 +18,42 @@ import com.example.quizapp.fragments.SettingsFragment;
 import com.example.quizapp.databinding.ActivityMainBinding;
 import com.example.quizapp.utils.FirebaseUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firestore.v1.StructuredQuery;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import kotlin.text.UStringsKt;
 
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
-
+    String userId1 = "AaWZ5yEnedL7al8jRhH9";
+    String userId2 = "VGC9WUC8CPdakSl38JBkDJPLz1r2";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         demoDatabase();
+//        deleteVocab(userId1, "001");
+//        deleteVocab(userId1, "002");
+//        deleteVocab(userId2, "001");
+//        deleteVocab(userId2, "002");
+//        createTopicExamble();
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-//        getSupportActionBar().hide();
+
         setContentView(R.layout.activity_main);
         setContentView(binding.getRoot());
         replaceFragment(new HomeFragment());
@@ -83,7 +99,116 @@ public class MainActivity extends AppCompatActivity {
         CollectionReference collectionRef = firestore.collection("usersDemo");
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put("age", 12);
+        updates.put("age", 15);
         collectionRef.document("zmyQmvdLc3DRhAAxlMOG").update(updates);
+        collectionRef.document("demo").set(updates);
+    }
+
+    private void deleteVocab(String userID, String topicCreatedId){
+        FirebaseFirestore firestore = FirebaseUtils.getFirestoreInstance();
+        firestore.collection("topic").document(userID).collection("topicCreated").document(topicCreatedId).collection("vocab").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    WriteBatch batch = firestore.batch();
+                    for(DocumentSnapshot documentSnapshot : task.getResult()) {
+                        batch.delete(documentSnapshot.getReference());
+                    }
+                    batch.commit();
+                    Log.d("deleteVocab", "onSuccess");
+                }
+            }
+        });
+    }
+
+    private void createTopicExamble(){
+        Map<String, Object> topicInfo = new HashMap<>();
+        topicInfo.put("name", "vegatables");
+        FirebaseFirestore firestore = FirebaseUtils.getFirestoreInstance();
+        CollectionReference collectionRef = firestore.collection("topic");
+        collectionRef.document(userId1).collection("topicCreated").document("001").set(topicInfo);
+        for(int i = 0; i < 2; i++){
+            Map<String, Object> vocab = new HashMap<>();
+            vocab.put("created_at", "Dec 7, 2023");
+            vocab.put("speech", "");
+            vocab.put("star", "");
+            vocab.put("status", "");
+            vocab.put("update_at", "Dec 7, 2023");
+            vocab.put("vietnameses_meaning", "");
+            vocab.put("word", "");
+            collectionRef.document(userId1).collection("topicCreated").document("001").collection("vocab").add(vocab);
+        }
+
+        Map<String, Object> topicInfo2 = new HashMap<>();
+        topicInfo2.put("name", "foods");
+        collectionRef.document(userId1).collection("topicCreated").document("002").set(topicInfo2);
+        for(int i = 0; i < 2; i++){
+            Map<String, Object> vocab = new HashMap<>();
+            vocab.put("created_at", "Dec 7, 2023");
+            vocab.put("speech", "");
+            vocab.put("star", "");
+            vocab.put("status", "");
+            vocab.put("update_at", "Dec 7, 2023");
+            vocab.put("vietnameses_meaning", "");
+            vocab.put("word", "");
+            collectionRef.document(userId1).collection("topicCreated").document("002").collection("vocab").add(vocab);
+        }
+
+
+
+        Map<String, Object> topicInfoForUser2 = new HashMap<>();
+        topicInfoForUser2.put("name", "jobs 2");
+        collectionRef.document(userId2).collection("topicCreated").document("001").set(topicInfoForUser2);
+        for(int i = 0; i < 2; i++){
+            Map<String, Object> vocab = new HashMap<>();
+            vocab.put("created_at", "Dec 7, 2023");
+            vocab.put("speech", "");
+            vocab.put("star", "");
+            vocab.put("status", "");
+            vocab.put("update_at", "Dec 7, 2023");
+            vocab.put("vietnameses_meaning", "");
+            vocab.put("word", "");
+            collectionRef.document(userId2).collection("topicCreated").document("001").collection("vocab").add(vocab);
+        }
+
+
+        Map<String, Object> topicInfoForUser2_2 = new HashMap<>();
+        topicInfoForUser2_2.put("name", "works 2");
+        collectionRef.document(userId2).collection("topicCreated").document("002").set(topicInfoForUser2_2);
+        for(int i = 0; i < 2; i++){
+            Map<String, Object> vocab = new HashMap<>();
+            vocab.put("created_at", "Dec 7, 2023");
+            vocab.put("speech", "");
+            vocab.put("star", "");
+            vocab.put("status", "");
+            vocab.put("update_at", "Dec 7, 2023");
+            vocab.put("vietnameses_meaning", "");
+            vocab.put("word", "");
+            collectionRef.document(userId2).collection("topicCreated").document("002").collection("vocab").add(vocab);
+        }
+
+        // add topic saved
+
+        List<String> topicSaved = new ArrayList<>();
+        topicSaved.add(userId2);
+        Map<String, Object> topicSavedMap = new HashMap<>();
+        topicSavedMap.put("userID", topicSaved);
+        collectionRef.document(userId1).collection("topicSaved").document("001").set(topicSavedMap);
+        createforderExamble();
+    }
+
+    public void createforderExamble(){
+        FirebaseFirestore firestore = FirebaseUtils.getFirestoreInstance();
+        CollectionReference collectionRef = firestore.collection("forder");
+        Map<String, Object> forderInfo = new HashMap<>();
+        forderInfo.put("forder_name", "java");
+        collectionRef.document(userId1).set(forderInfo);
+        // userUd1 saved topic of userId2
+        List<String> topicAdded = new ArrayList<>();
+        topicAdded.add("001");
+        topicAdded.add("002");
+        Map<String, Object> topicAddedMap = new HashMap<>();
+        topicAddedMap.put("topicID", topicAdded);
+        collectionRef.document(userId1).collection(userId2).document("topicSaved001").set(topicAddedMap);
     }
 }
