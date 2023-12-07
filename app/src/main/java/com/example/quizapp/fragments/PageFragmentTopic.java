@@ -54,15 +54,16 @@ public class PageFragmentTopic extends Fragment {
         Log.d("Library", "PageFragmentTopic");
         firestore = FirebaseUtils.getFirestoreInstance();
         View rootView = inflater.inflate(R.layout.fragment_page_topic, container, false);
-        fragmentPageTopicRecyclerView = rootView.findViewById(R.id.fragmentPageTopicRecyclerView);
         return inflater.inflate(R.layout.fragment_page_topic, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        fragmentPageTopicRecyclerView = view.findViewById(R.id.fragmentPageTopicRecyclerView);
         myTopicLibraries = new ArrayList<>();
 
+//        myTopicLibraries.add(new TopicLibrary("name", id_user, "001", 1, new User("fullName", "email", id_user)));
         getTopicSavedByUser(id_user, 0, 0);
     }
 
@@ -94,7 +95,6 @@ public class PageFragmentTopic extends Fragment {
             }
         });
         if(userID == id_user){
-            Log.d("PageFragmentTopic", "----------------------");
             collectionRef.collection("topicSaved").document("001").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -120,11 +120,6 @@ public class PageFragmentTopic extends Fragment {
                 }
             }
         });
-//        Log.d("PageFragmentTopic", "######getUserAndAddToList");
-//        Log.d("getUserAndAddToList", name);
-//        Log.d("getUserAndAddToList", userID);
-//        Log.d("getUserAndAddToList", "size: " + topicID);
-//        Log.d("getUserAndAddToList", "size: " + size);
     }
 
     private void updateUI(){

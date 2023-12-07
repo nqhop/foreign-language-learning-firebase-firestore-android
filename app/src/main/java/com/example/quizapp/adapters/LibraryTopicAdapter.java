@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,7 +35,7 @@ public class LibraryTopicAdapter extends RecyclerView.Adapter<LibraryTopicAdapte
     @Override
     public void onBindViewHolder(@NonNull MyviewHolder holder, int position) {
         holder.topicName.setText(topicLibraries.get(position).getName());
-        holder.count.setText(topicLibraries.get(position).getSize());
+        holder.countVocab.setText(""+topicLibraries.get(position).getsizeOfVocabList() + " Thuật ngữ");
         holder.userName.setText(topicLibraries.get(position).getUser().getName());
     }
 
@@ -45,12 +46,18 @@ public class LibraryTopicAdapter extends RecyclerView.Adapter<LibraryTopicAdapte
 
     public static class MyviewHolder extends RecyclerView.ViewHolder{
 
-        TextView topicName, count, userName;
+        TextView topicName, countVocab, userName;
         public MyviewHolder(@NonNull View itemView) {
             super(itemView);
             topicName = itemView.findViewById(R.id.topicName);
-            count = itemView.findViewById(R.id.terminologyCount);
+            countVocab = itemView.findViewById(R.id.terminologyCount);
             userName = itemView.findViewById(R.id.textView17);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(v.getContext(), "intent to vocab", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 }

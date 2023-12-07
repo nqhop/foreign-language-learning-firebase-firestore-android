@@ -30,22 +30,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_marginTop="0dp"
+                android:layout_marginTop="8dp"
                 android:textSize="20sp"
                 android:textColor="@color/black"
                 android:text="textView"
                 android:textStyle="bold" />
 
-
-
             <TextView
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="4dp"
+                android:background="@drawable/rounded_corner"
                 android:id="@+id/terminologyCount"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/topicName"
                 android:layout_alignParentStart="true"
-
+                android:layout_marginTop="6dp"
                 android:text="12 thuật ngữ" />
 
             <de.hdodenhof.circleimageview.CircleImageView

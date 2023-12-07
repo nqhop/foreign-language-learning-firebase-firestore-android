@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -36,6 +37,7 @@ public class LibraryDirectoryAdapter extends RecyclerView.Adapter<LibraryDirecto
     public void onBindViewHolder(@NonNull MyviewHolder holder, int position) {
         holder.directoryName.setText(dictionaries.get(position).getName());
         holder.userName.setText(dictionaries.get(position).getUser().getName());
+        holder.directoryImage.setImageResource(R.drawable.baseline_folder_open_24);
     }
 
     @Override
@@ -45,10 +47,13 @@ public class LibraryDirectoryAdapter extends RecyclerView.Adapter<LibraryDirecto
 
     public static class MyviewHolder extends RecyclerView.ViewHolder{
         TextView directoryName, userName;
+        ImageView directoryImage;
+
         public MyviewHolder(@NonNull View itemView) {
             super(itemView);
             directoryName = itemView.findViewById(R.id.textView12);
             userName = itemView.findViewById(R.id.textView17);
+            directoryImage = itemView.findViewById(R.id.imageView4);
         }
     }
 }

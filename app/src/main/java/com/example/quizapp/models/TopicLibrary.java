@@ -8,14 +8,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class TopicLibrary {
     private String name, userID, topicID;
-    private int size;
+    private int sizeOfVocabList;
     private User user;
 
-    public TopicLibrary(String name, String userID, String topicID, int size, User user) {
+    public TopicLibrary(String name, String userID, String topicID, int sizeOfVocabList, User user) {
         this.name = name;
         this.userID = userID;
         this.topicID = topicID;
-        this.size = size;
+        this.sizeOfVocabList = sizeOfVocabList;
         this.user = user;
     }
 
@@ -43,12 +43,12 @@ public class TopicLibrary {
         this.topicID = topicID;
     }
 
-    public int getSize() {
-        return size;
+    public int getsizeOfVocabList() {
+        return sizeOfVocabList;
     }
 
-    public void setSize(int size) {
-        this.size = size;
+    public void setsizeOfVocabList(int sizeOfVocabList) {
+        this.sizeOfVocabList = sizeOfVocabList;
     }
 
     public User getUser() {
