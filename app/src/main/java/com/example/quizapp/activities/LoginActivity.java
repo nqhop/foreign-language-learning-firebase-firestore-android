@@ -1,40 +1,45 @@
 package com.example.quizapp.activities;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.quizapp.R;
+import com.example.quizapp.activities.RegisterActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final int RC_SIGN_IN = 9001;
+    private static final String TAG = "LoginActivity";
+    private static final int RC_SIGN_IN = 123;
 
-    private Button btnLoginWithGoogle;
-    private TextView txtForgotPassword, txtSignUp;
+    private EditText etEmail, etPassword;
+    private Button btnLogin, btnGoogleLogin;
+    private TextView txtRegister, txtForgotPassword;
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
@@ -46,22 +51,50 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        btnLoginWithGoogle = findViewById(R.id.buttonGoogle);
-        txtForgotPassword = findViewById(R.id.textViewForgotPassword);
-        txtSignUp = findViewById(R.id.textViewSignup);
+        etEmail = findViewById(R.id.etEmailLogin);
+        etPassword = findViewById(R.id.etPasswordLogin);
+        btnLogin = findViewById(R.id.btnLogin);
+        btnGoogleLogin = findViewById(R.id.btnGoogleLogin);
+        txtRegister = findViewById(R.id.txtRegister);
+        txtForgotPassword = findViewById(R.id.txtForgotPassword);
 
-        // Configure Google Sign-In
-        configureGoogleSignIn();
+        btnLogin.setOnClickListener(view -> {
+            handleEmailLogin();
+        });
 
-        btnLoginWithGoogle.setOnClickListener(view -> signInWithGoogle());
+        btnGoogleLogin.setOnClickListener(view -> {
+            signInWithGoogle();
+        });
+
+        txtRegister.setOnClickListener(view -> {
+            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+            finish();
+        });
 
         txtForgotPassword.setOnClickListener(view -> {
-            startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
+            showForgotPasswordDialog();
         });
 
-        txtSignUp.setOnClickListener(view -> {
-            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-        });
+        configureGoogleSignIn();
+    }
+
+    private void handleEmailLogin() {
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+            Toast.makeText(LoginActivity.this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        checkUserDataInFirestore(mAuth.getCurrentUser().getUid());
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void configureGoogleSignIn() {
@@ -78,80 +111,101 @@ public class LoginActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            try {
-                // Get sign-in information from Google Sign-In
-                GoogleSignInAccount account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-            } catch (ApiException e) {
-                // Sign-in failed
-                Toast.makeText(LoginActivity.this, "Sign-in with Google failed", Toast.LENGTH_SHORT).show();
-            }
+    private void handleGoogleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            firebaseAuthWithGoogle(account.getIdToken());
+        } catch (ApiException e) {
+            Log.e(TAG, "Google sign in failed", e);
+            Toast.makeText(this, "Đăng nhập bằng Google thất bại", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        addUserDataToFirestore(user.getUid(), acct.getDisplayName(), acct.getEmail());
-
-                        // Navigate to MainActivity
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
+                        checkUserDataInFirestore(mAuth.getCurrentUser().getUid());
                     } else {
-                        Toast.makeText(this, "Sign-in with Google failed", Toast.LENGTH_SHORT).show();
-
-                        // Log the error
-                        Log.e(TAG, "Error signing in with Google", task.getException());
+                        Toast.makeText(LoginActivity.this, "Đăng nhập bằng Google thất bại", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
+    private void showForgotPasswordDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Quên mật khẩu");
 
-    private void addUserDataToFirestore(String userId, String fullName, String email) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Map<String, Object> user = new HashMap<>();
-        user.put("fullName", fullName);
-        user.put("email", email);
+        View view = getLayoutInflater().inflate(R.layout.activity_forgot_password, null);
+        EditText etEmailForgotPassword = view.findViewById(R.id.etEmail);
 
+        builder.setView(view);
 
-        db.collection("users")
-                .document(userId)
-                .set(user)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "DocumentSnapshot added with ID: " + userId))
-                .addOnFailureListener(e -> Log.w(TAG, "Error adding document", e));
+        builder.setPositiveButton("Gửi email", (dialog, which) -> {
+            String email = etEmailForgotPassword.getText().toString().trim();
+            if (!TextUtils.isEmpty(email)) {
+                sendResetPasswordEmail(email);
+            } else {
+                Toast.makeText(LoginActivity.this, "Vui lòng nhập địa chỉ email", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
+
+        builder.show();
     }
 
-    private void checkUserDataFromFirestore(String userId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private void sendResetPasswordEmail(String email) {
+        mAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(LoginActivity.this, "Kiểm tra email để đặt lại mật khẩu", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Gửi email đặt lại mật khẩu thất bại", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
-        db.collection("users")
-                .document(userId)
-                .get()
+    private void checkUserDataInFirestore(String userId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("users").document(userId);
+
+        userRef.get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        // Data from Firestore exists
+                        // Người dùng tồn tại trong Firestore
                         String fullName = documentSnapshot.getString("fullName");
-                        int age = documentSnapshot.getLong("age").intValue();
-                        // Use the data as needed
-                        Toast.makeText(LoginActivity.this, "Data from Firestore - Full Name: " + fullName + ", Age: " + age, Toast.LENGTH_SHORT).show();
+                        String email = documentSnapshot.getString("email");
+
+
+                        // Thực hiện các hành động sau khi đăng nhập thành công, ví dụ: chuyển đến màn hình chính
+                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class)
+                                .putExtra("fullName", fullName)
+                                .putExtra("email", email));
+                        finish();
                     } else {
-                        // Data from Firestore does not exist
-                        // Perform other actions if needed
-                        Toast.makeText(LoginActivity.this, "Data from Firestore does not exist", Toast.LENGTH_SHORT).show();
+                        // Người dùng không tồn tại trong Firestore, có thể do lỗi hoặc dữ liệu bị xóa
+                        Toast.makeText(LoginActivity.this, "Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
+                        // Đăng xuất người dùng (nếu cần)
+                        FirebaseAuth.getInstance().signOut();
                     }
                 })
                 .addOnFailureListener(e -> {
-                    // Handle errors if any
-                    Toast.makeText(LoginActivity.this, "Error checking data from Firestore", Toast.LENGTH_SHORT).show();
+                    // Xử lý lỗi khi truy vấn Firestore
+                    Toast.makeText(LoginActivity.this, "Lỗi khi xác minh thông tin người dùng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleGoogleSignInResult(task);
+        }
     }
 }

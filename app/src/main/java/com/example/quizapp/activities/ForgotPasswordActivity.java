@@ -21,7 +21,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         // Ánh xạ các view từ layout
         etEmail = findViewById(R.id.etEmail);
-        btnResetPassword = findViewById(R.id.btnResetPassword);
 
         // Xử lý sự kiện khi nhấn nút Reset Password
         btnResetPassword.setOnClickListener(new View.OnClickListener() {

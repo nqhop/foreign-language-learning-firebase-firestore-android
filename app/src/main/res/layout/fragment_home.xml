@@ -31,7 +31,9 @@
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                android:clickable="true"
+                android:onClick="onAvatarClick">
 
                 <ImageView
                     android:id="@+id/imageView2"

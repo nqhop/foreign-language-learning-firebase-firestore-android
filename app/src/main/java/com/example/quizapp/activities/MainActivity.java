@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.example.quizapp.fragments.HomeFragment;
 import com.example.quizapp.fragments.LibraryFragment;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     String userId1 = "AaWZ5yEnedL7al8jRhH9";
     String userId2 = "VGC9WUC8CPdakSl38JBkDJPLz1r2";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +85,11 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
+    }
+    public void onAvatarClick(View view) {
+        // Chuyển đến trang activity_profile
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
     }
     private void checkLoginStatus() {
         SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
