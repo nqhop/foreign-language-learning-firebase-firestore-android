@@ -2,10 +2,12 @@ package com.example.quizapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        applyNightMode();
         demoDatabase();
 //        deleteVocab(userId1, "001");
 //        deleteVocab(userId1, "002");
@@ -80,6 +82,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void applyNightMode() {
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        boolean nightModeEnabled = sharedPreferences.getBoolean("nightModeEnabled", false);
+
+        if (nightModeEnabled) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+    }
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

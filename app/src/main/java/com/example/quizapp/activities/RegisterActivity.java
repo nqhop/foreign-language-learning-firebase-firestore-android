@@ -2,7 +2,6 @@ package com.example.quizapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -79,19 +78,15 @@ public class RegisterActivity extends AppCompatActivity {
         Map<String, Object> user = new HashMap<>();
         user.put("fullName", fullName);
         user.put("email", email);
+        user.put("userType", "regular"); // Thêm userType là "regular"
 
         // Lưu thông tin người dùng vào Firestore
         db.collection("users")
                 .document(mAuth.getCurrentUser().getUid())
                 .set(user)
-                .addOnSuccessListener(aVoid -> {
-
-                    Toast.makeText(RegisterActivity.this, "Lưu thông tin người dùng thành công", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(RegisterActivity.this, "Lưu thông tin người dùng thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-
-
+                .addOnSuccessListener(aVoid ->
+                        Toast.makeText(RegisterActivity.this, "Lưu thông tin người dùng thành công", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(RegisterActivity.this, "Lưu thông tin người dùng thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }

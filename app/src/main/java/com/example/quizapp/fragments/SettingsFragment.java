@@ -148,6 +148,22 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.quizapp.R;  // Thay thế bằng tên package thích hợp
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Switch;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.quizapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -165,6 +181,8 @@ public class SettingsFragment extends Fragment {
     private TextView supportCenterTextView;
     private TextView introductionTextView;
     private Button logoutButton;
+    private TextView userTypeTextView;
+    private Button upgradeButton;
 
     @Nullable
     @Override
@@ -182,31 +200,31 @@ public class SettingsFragment extends Fragment {
         supportCenterTextView = view.findViewById(R.id.supportCenterTextView);
         introductionTextView = view.findViewById(R.id.introductionTextView);
         logoutButton = view.findViewById(R.id.logoutButton);
+        userTypeTextView = view.findViewById(R.id.userTypeTextView);
+        upgradeButton = view.findViewById(R.id.upgradeButton);
 
         updateUserInfo();
 
         logoutButton.setOnClickListener(v -> {
-             startActivity(new Intent(getActivity(), LoginActivity.class));
-             getActivity().finish();
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+            getActivity().finish();
         });
-        TextView passwordTextView = view.findViewById(R.id.passwordTextView);
+
         passwordTextView.setOnClickListener(v -> {
             startActivity(new Intent(getActivity(), ChangePasswordActivity.class));
         });
 
-
         nightModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                // Bật chế độ ban đêm
                 enableNightMode();
             } else {
-                // Tắt chế độ ban đêm
                 disableNightMode();
             }
         });
 
         return view;
     }
+
     private void enableNightMode() {
         SharedPreferences sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -220,7 +238,6 @@ public class SettingsFragment extends Fragment {
         editor.putBoolean("nightModeEnabled", false);
         editor.apply();
     }
-
 
     private void updateUserInfo() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -237,20 +254,49 @@ public class SettingsFragment extends Fragment {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
-                                // Lấy thông tin người dùng từ document
                                 String fullName = document.getString("fullName");
                                 String email = document.getString("email");
+                                String userType = document.getString("userType");
 
-                                // Cập nhật giá trị cho TextViews
                                 usernameTextView.setText("Tên người dùng: " + fullName);
                                 emailTextView.setText("Email: " + email);
-                            } else {
-                                // Không có dữ liệu cho tài khoản người dùng
+                                accountTypeTextView.setText("Loại tài khoản:" + userType);
+
+                                if ("premium".equals(userType)) {
+                                    userTypeTextView.setText(userType);
+                                    userTypeTextView.setTextColor(getResources().getColor(R.color.green));
+                                } else {
+                                    userTypeTextView.setText("regular");
+                                    userTypeTextView.setTextColor(getResources().getColor(R.color.red));
+                                    upgradeButton.setVisibility(View.VISIBLE);
+                                    upgradeButton.setOnClickListener(v -> upgradeToPremium());
+                                }
                             }
-                        } else {
-                            // Xử lý lỗi khi truy vấn dữ liệu
                         }
                     });
         }
-    }}
+    }
 
+    private void upgradeToPremium() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+
+            db.collection("users")
+                    .document(userId)
+                    .update("userType", "premium")
+                    .addOnSuccessListener(aVoid -> {
+                        accountTypeTextView.setText("Loại tài khoản: premium");
+                        userTypeTextView.setText("premium");
+                        userTypeTextView.setTextColor(getResources().getColor(R.color.green));
+                        upgradeButton.setVisibility(View.GONE);
+                    })
+                    .addOnFailureListener(e -> {
+                        // Xử lý lỗi khi cập nhật dữ liệu
+                    });
+        }
+    }
+}
