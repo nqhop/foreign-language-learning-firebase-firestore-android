@@ -1,11 +1,14 @@
 package com.example.quizapp.activities;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -18,7 +21,7 @@ interface setTextAndFrondOrBackRunnable {
 }
 public class VocabActivity extends AppCompatActivity {
 
-    TextView flipCardTextView;
+    TextView flipCardTextView, customTitle;
 
     ObjectAnimator animator1, animator2;
     boolean flashcardInFrond = true;
@@ -27,6 +30,14 @@ public class VocabActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vocab);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.custom_action_bar);
+        customTitle = actionBar.getCustomView().findViewById(R.id.custom_title);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(null);
+        customTitle.setText("Centered Title");
+
         flipCardTextView = findViewById(R.id.flipCardTextView);
         // close animator
         animator1 = ObjectAnimator.ofFloat(flipCardTextView, "scaleX", 1f, 0f);
@@ -36,6 +47,13 @@ public class VocabActivity extends AppCompatActivity {
         animator2.setInterpolator(new AccelerateInterpolator());
 
         setOnClickForFlipCard();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.flash_card_menu, menu);
+        return true;
     }
 
     private void setOnClickForFlipCard() {
