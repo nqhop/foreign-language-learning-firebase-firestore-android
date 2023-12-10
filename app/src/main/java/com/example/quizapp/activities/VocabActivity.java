@@ -1,18 +1,22 @@
 package com.example.quizapp.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.quizapp.R;
 
@@ -30,13 +34,14 @@ public class VocabActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vocab);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        actionBar.setCustomView(R.layout.custom_action_bar);
-        customTitle = actionBar.getCustomView().findViewById(R.id.custom_title);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(null);
-        customTitle.setText("Centered Title");
+
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+//        actionBar.setCustomView(R.layout.custom_action_bar);
+//        customTitle = actionBar.getCustomView().findViewById(R.id.custom_title);
+//        actionBar.setDisplayHomeAsUpEnabled(true);
+//        actionBar.setTitle(null);
+//        customTitle.setText("Centered Title");
 
         flipCardTextView = findViewById(R.id.flipCardTextView);
         // close animator
@@ -54,6 +59,15 @@ public class VocabActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.flash_card_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.flashCardSettings){
+            Toast.makeText(this, "flashCardSettings", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, vocabSettingActivity.class));
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setOnClickForFlipCard() {

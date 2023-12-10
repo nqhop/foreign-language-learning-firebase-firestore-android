@@ -13,15 +13,21 @@
         android:theme="@style/Theme.QuizApp"
         tools:targetApi="31">
         <activity
+            android:name=".activities.vocabSettingActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.TranslucentWithNoActionBar"
+            />
+        <activity
             android:name=".activities.LearningActivity"
             android:exported="false" />
         <activity
             android:name=".activities.VocabActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".activities.LoginActivity"
             android:exported="true"
-            android:label="LoginActivity"></activity>
+            android:label="LoginActivity" />
         <activity
             android:name=".activities.ProfileActivity"
             android:exported="false" />
@@ -39,7 +45,7 @@
         </activity>
         <activity
             android:name=".activities.ChangePasswordActivity"
-            android:label="Change Password"></activity>
+            android:label="Change Password" />
     </application>
 
 </manifest>
