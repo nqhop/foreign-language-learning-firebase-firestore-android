@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
@@ -72,7 +73,6 @@ public class LibraryFragment extends Fragment {
     private ViewPager viewPager;
     private TabLayout tabLayout;
     LibraryPagerAdapter adapter;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -97,13 +97,17 @@ public class LibraryFragment extends Fragment {
         });
 
         Log.d("Library", "----------LibraryFragment----------");
-        adapter = new LibraryPagerAdapter(getActivity().getSupportFragmentManager());
+        adapter = new LibraryPagerAdapter(getChildFragmentManager());
+        Log.d("Library", "size: " + adapter.getCount());
         adapter.addFragment(new PageFragmentTopic(), "Học phần");
         adapter.addFragment(new PageFragmentDirectory(), "Thư mục");
         adapter.addFragment(new PageFragmentClasses(), "Lớp học");
-        Log.d("Library", "size: " + adapter.getCount());
 
         viewPager.setAdapter(adapter);
+        viewPager.setSaveFromParentEnabled(false);
+        viewPager.setOffscreenPageLimit(3);
+
+
         tabLayout.setupWithViewPager(viewPager);
         PageFragmentClasses fragmentClasses = (PageFragmentClasses) adapter.getItem(2);
 
@@ -111,22 +115,6 @@ public class LibraryFragment extends Fragment {
             TextView textView = fragmentClasses.getView().findViewById(R.id.textView15);
             textView.setText("Updated title");
         }
-
-
-//        fragmentClasses.getActivity().runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                TextView textView = fragmentClasses.getView().findViewById(R.id.textView15);
-//                textView.setText("Updated title");
-//            }
-//        });
-        // Inflate the layout for this fragment
         return rootView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        adapter.notifyDataSetChanged();
     }
 }

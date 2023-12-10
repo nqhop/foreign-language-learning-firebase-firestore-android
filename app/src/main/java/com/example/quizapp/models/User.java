@@ -1,6 +1,8 @@
 package com.example.quizapp.models;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String name, email, id;
 
     public User(String name, String email, String id) {

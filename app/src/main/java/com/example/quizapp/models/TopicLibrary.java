@@ -6,7 +6,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class TopicLibrary {
+import java.io.Serializable;
+
+public class TopicLibrary implements Serializable {
     private String name, userID, topicID;
     private int sizeOfVocabList;
     private User user;

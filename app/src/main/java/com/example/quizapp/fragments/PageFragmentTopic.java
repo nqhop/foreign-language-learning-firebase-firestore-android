@@ -1,11 +1,14 @@
 package com.example.quizapp.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quizapp.R;
+import com.example.quizapp.RecyclerViewInterface;
+import com.example.quizapp.activities.LearningActivity;
 import com.example.quizapp.adapters.LibraryTopicAdapter;
 import com.example.quizapp.models.TopicLibrary;
 import com.example.quizapp.models.User;
@@ -37,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-public class PageFragmentTopic extends Fragment {
+public class PageFragmentTopic extends Fragment implements RecyclerViewInterface{
 
     FirebaseFirestore firestore;
     RecyclerView fragmentPageTopicRecyclerView;
@@ -48,6 +53,8 @@ public class PageFragmentTopic extends Fragment {
     public PageFragmentTopic() {
         // Required empty public constructor
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -124,8 +131,17 @@ public class PageFragmentTopic extends Fragment {
 
     private void updateUI(){
         Log.d("updateUI", "size: " + myTopicLibraries.size());
-        LibraryTopicAdapter adapter = new LibraryTopicAdapter(getContext(), myTopicLibraries);
+        LibraryTopicAdapter adapter = new LibraryTopicAdapter(getContext(), myTopicLibraries, this);
         fragmentPageTopicRecyclerView.setAdapter(adapter);
         fragmentPageTopicRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    @Override
+    public void onItemClick(int posotion) {
+        Log.d("PageFragmentTopic", "position " + posotion);
+        Log.d("PageFragmentTopic", "TopicLibrary " + myTopicLibraries.get(posotion).getName());
+        Intent i = new Intent(getContext(), LearningActivity.class);
+        i.putExtra("TopicLibraryItem", myTopicLibraries.get(posotion));
+        startActivity(i);
     }
 }

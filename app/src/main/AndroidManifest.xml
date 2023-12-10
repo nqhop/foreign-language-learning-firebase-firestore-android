@@ -12,37 +12,34 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuizApp"
         tools:targetApi="31">
-
+        <activity
+            android:name=".activities.LearningActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.VocabActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".activities.LoginActivity"
             android:exported="true"
-            android:label="LoginActivity">
-
-        </activity>
+            android:label="LoginActivity"></activity>
         <activity
             android:name=".activities.ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".activities.RegisterActivity"
             android:exported="false" />
-
         <activity
             android:name=".activities.MainActivity"
-            android:exported="true"
-            >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".activities.ChangePasswordActivity"
-            android:label="Change Password">
-        </activity>
+            android:label="Change Password"></activity>
     </application>
 
 </manifest>

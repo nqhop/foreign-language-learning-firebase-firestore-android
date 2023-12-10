@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quizapp.R;
+import com.example.quizapp.RecyclerViewInterface;
 import com.example.quizapp.models.TopicLibrary;
 
 import java.util.ArrayList;
@@ -18,10 +19,12 @@ import java.util.ArrayList;
 public class LibraryTopicAdapter extends RecyclerView.Adapter<LibraryTopicAdapter.MyviewHolder>{
      private Context context;
      private ArrayList<TopicLibrary> topicLibraries;
+     private RecyclerViewInterface recyclerViewInterface;
 
-    public LibraryTopicAdapter(Context context, ArrayList<TopicLibrary> topicLibraries) {
+    public LibraryTopicAdapter(Context context, ArrayList<TopicLibrary> topicLibraries, RecyclerViewInterface recyclerViewInterface) {
         this.context = context;
         this.topicLibraries = topicLibraries;
+        this.recyclerViewInterface = recyclerViewInterface;
     }
 
     @NonNull
@@ -29,7 +32,7 @@ public class LibraryTopicAdapter extends RecyclerView.Adapter<LibraryTopicAdapte
     public LibraryTopicAdapter.MyviewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.topic_view, parent, false);
-        return new LibraryTopicAdapter.MyviewHolder(view);
+        return new LibraryTopicAdapter.MyviewHolder(view, recyclerViewInterface);
     }
 
     @Override
@@ -47,7 +50,7 @@ public class LibraryTopicAdapter extends RecyclerView.Adapter<LibraryTopicAdapte
     public static class MyviewHolder extends RecyclerView.ViewHolder{
 
         TextView topicName, countVocab, userName;
-        public MyviewHolder(@NonNull View itemView) {
+        public MyviewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
             super(itemView);
             topicName = itemView.findViewById(R.id.topicName);
             countVocab = itemView.findViewById(R.id.terminologyCount);
@@ -55,7 +58,12 @@ public class LibraryTopicAdapter extends RecyclerView.Adapter<LibraryTopicAdapte
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(v.getContext(), "intent to vocab", Toast.LENGTH_SHORT).show();
+                    if(recyclerViewInterface != null){
+                        int pos = getAdapterPosition();
+                        if(pos != RecyclerView.NO_POSITION){
+                            recyclerViewInterface.onItemClick(pos);
+                        }
+                    }
                 }
             });
         }

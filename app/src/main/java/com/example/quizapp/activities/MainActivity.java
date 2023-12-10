@@ -21,22 +21,17 @@ import com.example.quizapp.fragments.SettingsFragment;
 import com.example.quizapp.databinding.ActivityMainBinding;
 import com.example.quizapp.utils.FirebaseUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
-import com.google.firestore.v1.StructuredQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import kotlin.text.UStringsKt;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,10 +72,12 @@ public class MainActivity extends AppCompatActivity {
                 replaceFragment(new LibraryFragment());
             } else if (item.getItemId() == R.id.settings) {
                 replaceFragment(new SettingsFragment());
+
             }
             return true;
         });
     }
+
 
     private void applyNightMode() {
         SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
@@ -95,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout, fragment);
+        fragmentTransaction.replace(R.id.frame_layout_main, fragment);
         fragmentTransaction.commit();
     }
     public void onAvatarClick(View view) {
