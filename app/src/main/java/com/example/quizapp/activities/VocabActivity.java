@@ -3,16 +3,22 @@ package com.example.quizapp.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
@@ -35,13 +41,14 @@ public class VocabActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vocab);
 
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-//        actionBar.setCustomView(R.layout.custom_action_bar);
-//        customTitle = actionBar.getCustomView().findViewById(R.id.custom_title);
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-//        actionBar.setTitle(null);
-//        customTitle.setText("Centered Title");
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.custom_action_bar);
+        customTitle = actionBar.getCustomView().findViewById(R.id.custom_title);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(null);
+        customTitle.setText("Centered Title");
+
 
         flipCardTextView = findViewById(R.id.flipCardTextView);
         // close animator
@@ -52,6 +59,31 @@ public class VocabActivity extends AppCompatActivity {
         animator2.setInterpolator(new AccelerateInterpolator());
 
         setOnClickForFlipCard();
+    }
+
+    private void createTheDialog(){
+        // set the translucent overlay on the current activity
+        ViewGroup rootView = findViewById(android.R.id.content);
+        View overlayView = new View(this);
+        overlayView.setBackgroundColor(ContextCompat.getColor(this, R.color.overlay_color));
+        overlayView.setAlpha(0.5f); // Adjust the transparency level as desired
+        rootView.addView(overlayView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+
+        // Create the dialog
+        Dialog dialog = new Dialog(this, R.style.AppTheme_TranslucentDialog);
+        dialog.setContentView(R.layout.activity_vocab_setting);
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            WindowManager.LayoutParams layoutParams = window.getAttributes();
+            layoutParams.gravity = Gravity.BOTTOM;
+            layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+            layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            window.setAttributes(layoutParams);
+        }
+
+        dialog.show();
     }
 
     @Override
@@ -65,7 +97,7 @@ public class VocabActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.flashCardSettings){
             Toast.makeText(this, "flashCardSettings", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, vocabSettingActivity.class));
+            createTheDialog();
         }
         return super.onOptionsItemSelected(item);
     }
