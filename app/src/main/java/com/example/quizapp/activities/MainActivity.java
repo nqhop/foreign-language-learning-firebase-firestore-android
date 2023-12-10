@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +29,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -143,30 +146,40 @@ public class MainActivity extends AppCompatActivity {
         FirebaseFirestore firestore = FirebaseUtils.getFirestoreInstance();
         CollectionReference collectionRef = firestore.collection("topic");
         collectionRef.document(userId1).collection("topicCreated").document("001").set(topicInfo);
-        for(int i = 0; i < 2; i++){
+
+//        https://engbreaking.com/trai-cay-tieng-anh/?psafe_param=1&utm_source=google&utm_medium=cpc&utm_campaign=17-goga-viet-an-bui-performance-max-purchase-vnd&utm_term=&utm_content=&gad_source=1&gclid=Cj0KCQiA4NWrBhD-ARIsAFCKwWuJLiEMU-y3spyyeymLRcjxFwjhlAYaIQW3w31n9S7ZaNMAum64eW4aAjT6EALw_wcB
+        String[] words = {"Ambarella", "Apple", "Apricot", "Avocado", "Banana", "Strawberry", "Cantaloupe"};
+        String[] vietNamesesMeaning = {"cóc", "táo", "mơ", "bơ", "chuối", "dâu tây", "Dưa vàng"};
+        for(int i = 0; i < words.length; i++){
             Map<String, Object> vocab = new HashMap<>();
-            vocab.put("created_at", "Dec 7, 2023");
-            vocab.put("speech", "");
-            vocab.put("star", "");
-            vocab.put("status", "");
-            vocab.put("update_at", "Dec 7, 2023");
-            vocab.put("vietnameses_meaning", "");
-            vocab.put("word", "");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vocab.put("created_at", Timestamp.from(Instant.now()));
+                vocab.put("update_at", Timestamp.from(Instant.now()));
+            }
+            vocab.put("star", false);
+            vocab.put("status", "new");
+
+            vocab.put("vietnameses_meaning", vietNamesesMeaning[i]);
+            vocab.put("word", words[i].toLowerCase());
             collectionRef.document(userId1).collection("topicCreated").document("001").collection("vocab").add(vocab);
         }
 
         Map<String, Object> topicInfo2 = new HashMap<>();
         topicInfo2.put("name", "foods");
         collectionRef.document(userId1).collection("topicCreated").document("002").set(topicInfo2);
-        for(int i = 0; i < 2; i++){
+        String[] foodsVocab = {"Cheeseburger", "Chicken nuggets", "Chili sauce", "Chips", "Donut"};
+        String[] foodsVocabMeaning = {"bánh mỳ kẹp", "gà viên chiên", "tương ớt", " khoai tây chiên", "bánh vòng"};
+        for(int i = 0; i < foodsVocab.length; i++){
             Map<String, Object> vocab = new HashMap<>();
-            vocab.put("created_at", "Dec 7, 2023");
-            vocab.put("speech", "");
-            vocab.put("star", "");
-            vocab.put("status", "");
-            vocab.put("update_at", "Dec 7, 2023");
-            vocab.put("vietnameses_meaning", "");
-            vocab.put("word", "");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vocab.put("created_at", Timestamp.from(Instant.now()));
+                vocab.put("update_at", Timestamp.from(Instant.now()));
+            }
+            vocab.put("star", false);
+            vocab.put("status", "new");
+
+            vocab.put("vietnameses_meaning", foodsVocabMeaning[i]);
+            vocab.put("word", foodsVocab[i].toLowerCase());
             collectionRef.document(userId1).collection("topicCreated").document("002").collection("vocab").add(vocab);
         }
 

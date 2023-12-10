@@ -12,6 +12,7 @@ public class TopicLibrary implements Serializable {
     private String name, userID, topicID;
     private int sizeOfVocabList;
     private User user;
+    private boolean isCreated = false;
 
     public TopicLibrary(String name, String userID, String topicID, int sizeOfVocabList, User user) {
         this.name = name;
@@ -19,6 +20,7 @@ public class TopicLibrary implements Serializable {
         this.topicID = topicID;
         this.sizeOfVocabList = sizeOfVocabList;
         this.user = user;
+        this.isCreated = true;
     }
 
     public String getName() {
@@ -59,5 +61,13 @@ public class TopicLibrary implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isCreated() {
+        return isCreated;
+    }
+
+    public void setCreated(boolean created) {
+        isCreated = created;
     }
 }
