@@ -156,15 +156,12 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    // Hàm cập nhật đường dẫn ảnh mới vào Firestore
     private void updateImageInFirestore(String imageUrl) {
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
 
         if (currentUser != null) {
-            // Lấy ID người dùng hiện tại
             String userId = currentUser.getUid();
 
-            // Thực hiện cập nhật đường dẫn ảnh vào tài liệu người dùng trong Firestore
             DocumentReference userRef = firestoreDB.collection("users").document(userId);
             userRef.update("imageUrl", imageUrl)
                     .addOnCompleteListener(task -> {
