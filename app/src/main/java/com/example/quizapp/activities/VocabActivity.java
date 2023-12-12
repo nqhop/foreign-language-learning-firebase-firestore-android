@@ -38,6 +38,11 @@ import com.google.firebase.Timestamp;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 interface setTextAndFrondOrBackRunnable {
     void run(String text);
@@ -55,6 +60,8 @@ public class VocabActivity extends AppCompatActivity {
     TextToSpeech toSpeech, toSpeechMeaning;
     boolean autoScroll = false;
     String word = "", meaning = "";
+    TextView textView21;
+    Timer timer = new Timer();
     setTextAndFrondOrBackRunnable setTextAndFrondOrBack;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +74,9 @@ public class VocabActivity extends AppCompatActivity {
         customTitle = actionBar.getCustomView().findViewById(R.id.custom_title);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(null);
+
+
+        textView21 = findViewById(R.id.textView21);
 
         arrowLeft = findViewById(R.id.imageView13);
         arrowRight = findViewById(R.id.imageView14);
@@ -218,39 +228,86 @@ public class VocabActivity extends AppCompatActivity {
             }
             autoScroll = !autoScroll;
             autoScroll();
+
+//            try {
+//                Thread.sleep(7000);
+//                autoScroll();
+//                Log.d("Thread", "in Thread");
+//            } catch (InterruptedException e) {
+//            }
+//            Log.d("Thread", "out Thread");
         });
 //        for(int i = 0; i < vocabList.size(); i++){
 //            Log.d("VocabActivity", "vocabList: " + vocabList.get(i).getWord());
 //        }
     }
+    private void autoScroll2(){
+        // Create a ScheduledExecutorService
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        speech();
+        executor.schedule(VocabActivity::secondFunction, 2, TimeUnit.SECONDS);
+    }
 
+    public static void secondFunction() {
+        // Code for the second function
+        System.out.println("Second function executed after 2 seconds");
+    }
+
+    private void secondMethod() {
+        // Code for the second method
+        textView21.animate()
+                .alpha(0.0f)
+                .setDuration(1000)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        textView21.setText("Second method executed after 2 seconds");
+                        textView21.animate()
+                                .alpha(1.0f)
+                                .setDuration(1000)
+                                .setListener(null)
+                                .start();
+                    }
+                })
+                .start();
+    }
     private void autoScroll(){
-        int timeSleep = 3000;
-//        speech();
-//        flipCard();
-        try {
-            while (currentVocabIndex < vocabList.size()){
-                if(flashcardInFrond){
-                    speech();
-                    flipCard();
-                    Thread.sleep(timeSleep);
-                    speech();
-                    break;
-//                    flashcardInFrond = false;
-                }
-                if(!flashcardInFrond){
-                    speech();
-                    Thread.sleep(timeSleep);
-                    flashcardInFrond = false;
-                    currentVocabIndex++;
-                    setWordAndMeaning();
-                }
-                if(currentVocabIndex < vocabList.size()){
-                    setTitleActionBar();
-                }
+        int duration = 2000;
+        textView21.setText("First method executed!");
+        textView21.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                secondMethod();
             }
-        }catch (InterruptedException e) {
-        }
+        }, 2000);
+
+        speech();
+        flipCardTextView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                flipCard();
+            }
+        }, duration);
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                speech();
+            }
+        };
+        timer.schedule(task, 3000);
+//        try {
+//            Thread.sleep(7000);
+//            autoScroll();
+//        } catch (InterruptedException e) {
+//        }
+
+//        if(currentVocabIndex < vocabList.size() - 1){
+//            currentVocabIndex++;
+//            word = vocabList.get(currentVocabIndex).getWord();
+//            meaning = vocabList.get(currentVocabIndex).getMeaning();
+//            setTextInFlipCard();
+//            setTitleActionBar();
+//        }
     }
     private void setWordAndMeaning(){
         word = vocabList.get(currentVocabIndex).getWord();
