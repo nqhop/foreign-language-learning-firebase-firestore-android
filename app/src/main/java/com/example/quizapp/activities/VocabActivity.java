@@ -12,6 +12,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,8 +25,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,7 +53,7 @@ interface setTextAndFrondOrBackRunnable {
 public class VocabActivity extends AppCompatActivity {
 
     TextView customTitle, flipCardTextView;
-    LinearLayout flipCardLinearLayout;
+    LinearLayout flipCardLinearLayout, playArrowWrapper;
     ImageView arrowLeft, arrowRight, playArrow, speechIcon;
     ObjectAnimator animator1, animator2;
     boolean flashcardInFrond = true;
@@ -60,8 +63,8 @@ public class VocabActivity extends AppCompatActivity {
     TextToSpeech toSpeech, toSpeechMeaning;
     boolean autoScroll = false;
     String word = "", meaning = "";
-    TextView textView21;
     Timer timer = new Timer();
+    boolean isAutoClickFlag = false, isClickByUser = false;
     setTextAndFrondOrBackRunnable setTextAndFrondOrBack;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,13 +79,12 @@ public class VocabActivity extends AppCompatActivity {
         actionBar.setTitle(null);
 
 
-        textView21 = findViewById(R.id.textView21);
-
         arrowLeft = findViewById(R.id.imageView13);
         arrowRight = findViewById(R.id.imageView14);
         playArrow = findViewById(R.id.imageView15);
         flipCardTextView = findViewById(R.id.textView13);
         flipCardLinearLayout = findViewById(R.id.flipCardTextView);
+        playArrowWrapper = findViewById(R.id.playArrowWrapper);
         speechIcon = findViewById(R.id.imageView12);
         // close animator
         animator1 = ObjectAnimator.ofFloat(flipCardLinearLayout, "scaleX", 1f, 0f);
@@ -183,6 +185,43 @@ public class VocabActivity extends AppCompatActivity {
                     rootView.removeView(overlayView);
                 }
         });
+
+        // dialog action
+        TextView resetVocab = dialog.findViewById(R.id.textView29);
+        resetVocab.setOnClickListener(v -> {
+            resetFlashCard();
+            dialog.dismiss();
+        });
+
+        RadioButton radioButtonWord, radioButtonMeaning;
+        radioButtonWord = dialog.findViewById(R.id.radio_a);
+        radioButtonMeaning = dialog.findViewById(R.id.radio_b);
+
+        radioButtonWord.setOnCheckedChangeListener(listenerRadio);
+        radioButtonMeaning.setOnCheckedChangeListener(listenerRadio);
+    }
+
+    // Dialog helper
+    CompoundButton.OnCheckedChangeListener listenerRadio
+            = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            if (b) {
+                setWordAndMeaning();
+                setTextInFlipCard();
+                Toast.makeText(VocabActivity.this, "Bạn chọn:" + compoundButton.getText(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    private void resetFlashCard(){
+        Toast.makeText(this, "resetFlashCard", Toast.LENGTH_SHORT).show();
+        currentVocabIndex = 0;
+        flashcardInFrond = true;
+        setWordAndMeaning();
+        setTitleActionBar();
+        setTextInFlipCard();
+
     }
 
     @Override
@@ -195,7 +234,6 @@ public class VocabActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.flashCardSettings){
-            Toast.makeText(this, "flashCardSettings", Toast.LENGTH_SHORT).show();
             createTheDialog();
         }
         return super.onOptionsItemSelected(item);
@@ -205,8 +243,7 @@ public class VocabActivity extends AppCompatActivity {
         arrowRight.setOnClickListener(v -> {
             if(currentVocabIndex < vocabList.size() - 1){
                 currentVocabIndex++;
-                word = vocabList.get(currentVocabIndex).getWord();
-                meaning = vocabList.get(currentVocabIndex).getMeaning();
+                setWordAndMeaning();
                 setTextInFlipCard();
                 setTitleActionBar();
             }
@@ -214,72 +251,78 @@ public class VocabActivity extends AppCompatActivity {
         arrowLeft.setOnClickListener(v -> {
             if(currentVocabIndex >0){
                 currentVocabIndex--;
-                word = vocabList.get(currentVocabIndex).getWord();
-                meaning = vocabList.get(currentVocabIndex).getMeaning();
+                setWordAndMeaning();
                 setTextInFlipCard();
                 setTitleActionBar();
             }
         });
-        playArrow.setOnClickListener(v -> {
-            if(autoScroll) {
-                playArrow.setImageResource(R.drawable.baseline_play_arrow_24);
-            }else{
-                playArrow.setImageResource(R.drawable.baseline_pause_24);
+        playArrowWrapper.setOnClickListener(v -> {
+            if(!isClickByUser){
+                isClickByUser = true;
+                new java.util.Timer().schedule(
+                        new java.util.TimerTask() {
+                            @Override
+                            public void run() {
+                                playArrow.performClick();
+                            }
+                        },
+                        2000
+                );
+            }else {
+                isClickByUser = false;
             }
+        });
+        playArrow.setOnClickListener(v -> {
+            if(!isAutoClickFlag){
+                if(autoScroll) {
+                    playArrow.setImageResource(R.drawable.baseline_play_arrow_24);
+                }else{
+                    playArrow.setImageResource(R.drawable.baseline_pause_24);
+                }
+            }
+
             autoScroll = !autoScroll;
             autoScroll();
-
-//            try {
-//                Thread.sleep(7000);
-//                autoScroll();
-//                Log.d("Thread", "in Thread");
-//            } catch (InterruptedException e) {
-//            }
-//            Log.d("Thread", "out Thread");
+            if(currentVocabIndex < vocabList.size() - 1){
+                isAutoClickFlag = true;
+                clickEventArrowRightDelay();
+                clickEventPlayArrowDelay();
+            }else {
+                new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            playArrow.setImageResource(R.drawable.baseline_play_arrow_24);
+                        }
+                    },
+                    5000
+                );
+            }
         });
-//        for(int i = 0; i < vocabList.size(); i++){
-//            Log.d("VocabActivity", "vocabList: " + vocabList.get(i).getWord());
-//        }
     }
-    private void autoScroll2(){
-        // Create a ScheduledExecutorService
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        speech();
-        executor.schedule(VocabActivity::secondFunction, 2, TimeUnit.SECONDS);
-    }
-
-    public static void secondFunction() {
-        // Code for the second function
-        System.out.println("Second function executed after 2 seconds");
-    }
-
-    private void secondMethod() {
-        // Code for the second method
-        textView21.animate()
-                .alpha(0.0f)
-                .setDuration(1000)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        textView21.setText("Second method executed after 2 seconds");
-                        textView21.animate()
-                                .alpha(1.0f)
-                                .setDuration(1000)
-                                .setListener(null)
-                                .start();
-                    }
-                })
-                .start();
-    }
-    private void autoScroll(){
-        int duration = 2000;
-        textView21.setText("First method executed!");
-        textView21.postDelayed(new Runnable() {
+    private void clickEventArrowRightDelay(){
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                secondMethod();
+                flashcardInFrond = !flashcardInFrond;
+                arrowRight.performClick();
             }
-        }, 2000);
+        }, 5000);
+    }
+    private void clickEventPlayArrowDelay(){
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                playArrow.performClick();
+            }
+        }, 7000);
+    }
+
+    private void autoScroll(){
+        int duration = 2000;
+
 
         speech();
         flipCardTextView.postDelayed(new Runnable() {
@@ -295,19 +338,7 @@ public class VocabActivity extends AppCompatActivity {
             }
         };
         timer.schedule(task, 3000);
-//        try {
-//            Thread.sleep(7000);
-//            autoScroll();
-//        } catch (InterruptedException e) {
-//        }
 
-//        if(currentVocabIndex < vocabList.size() - 1){
-//            currentVocabIndex++;
-//            word = vocabList.get(currentVocabIndex).getWord();
-//            meaning = vocabList.get(currentVocabIndex).getMeaning();
-//            setTextInFlipCard();
-//            setTitleActionBar();
-//        }
     }
     private void setWordAndMeaning(){
         word = vocabList.get(currentVocabIndex).getWord();
@@ -336,6 +367,7 @@ public class VocabActivity extends AppCompatActivity {
             }
         });
     }
+
     private void flipCard(){
     //   setTextAndFrondOrBack.run(flashcardInFrond ? "Back" : "frond");
         setTextAndFrondOrBack.run(flashcardInFrond ? meaning : word);

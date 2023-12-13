@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //test fashcard
-        startActivity(new Intent(this, VocabActivity.class));
+//        startActivity(new Intent(this, VocabActivity.class));
 
         applyNightMode();
         demoDatabase();
