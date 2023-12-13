@@ -50,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
         //test fashcard
 //        startActivity(new Intent(this, VocabActivity.class));
 
+        // test multiple choise
+//        startActivity(new Intent(this, multipleChoiceTestActivity.class));
+
         applyNightMode();
         demoDatabase();
 //        deleteVocab(userId1, "001");
