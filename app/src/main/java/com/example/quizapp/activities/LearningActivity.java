@@ -4,6 +4,7 @@ import static java.security.AccessController.getContext;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,6 +37,7 @@ import java.util.Map;
 public class LearningActivity extends AppCompatActivity {
 
     TextView nameOfTopic, userName, numberOfVocab;
+    CardView flashCardView;
     RecyclerView learningVocabRecyclerView;
     ArrayList<Vocab2> vocabList;
     TextToSpeech toSpeech;
@@ -50,6 +52,7 @@ public class LearningActivity extends AppCompatActivity {
         userName = findViewById(R.id.textView16);
         numberOfVocab = findViewById(R.id.textView18);
         learningVocabRecyclerView = findViewById(R.id.learningVocabRecyclerView);
+        flashCardView = findViewById(R.id.cardView);
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);
