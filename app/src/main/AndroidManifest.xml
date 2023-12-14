@@ -48,6 +48,9 @@
         <activity
             android:name=".activities.ChangePasswordActivity"
             android:label="Change Password" />
-    </application>
+        <activity
+            android:name=".activities.TypeWordActivity"
+            android:exported="false"/>
+      </application>
 
 </manifest>

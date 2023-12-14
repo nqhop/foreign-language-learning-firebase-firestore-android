@@ -22,13 +22,15 @@
                 android:layout_height="250dp"
                 android:background="@drawable/background_profile">
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/userImageView"
                     android:layout_width="161dp"
                     android:layout_height="238dp"
                     android:clickable="true"
                     android:onClick="pickImage"
                     android:src="@drawable/ic_placeholder_image"
+                    app:civ_border_color="#FFFFFF"
+                    app:civ_border_width="4dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -44,10 +46,8 @@
                     android:textColor="@color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"/>
 
-
-                -->
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView

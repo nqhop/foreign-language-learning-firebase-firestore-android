@@ -1,7 +1,5 @@
 package com.example.quizapp.activities;
 
-import static java.security.AccessController.getContext;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -23,7 +21,6 @@ import com.example.quizapp.adapters.VocabLearningAdapter;
 import com.example.quizapp.models.TopicLibrary;
 import com.example.quizapp.models.Vocab2;
 import com.example.quizapp.utils.FirebaseUtils;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,7 +34,7 @@ import java.util.Map;
 public class LearningActivity extends AppCompatActivity {
 
     TextView nameOfTopic, userName, numberOfVocab;
-    CardView flashCardView;
+    CardView flashCardView, goTuCardView; // Thêm biến goTuCardView
     RecyclerView learningVocabRecyclerView;
     ArrayList<Vocab2> vocabList;
     TextToSpeech toSpeech;
@@ -53,8 +50,9 @@ public class LearningActivity extends AppCompatActivity {
         numberOfVocab = findViewById(R.id.textView18);
         learningVocabRecyclerView = findViewById(R.id.learningVocabRecyclerView);
         flashCardView = findViewById(R.id.cardView);
+        goTuCardView = findViewById(R.id.cardView2); // Khai báo goTuCardView
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle("Learning");
         }
@@ -69,6 +67,14 @@ public class LearningActivity extends AppCompatActivity {
         userName.setText(topicLibraryItem.getUser().getName());
         numberOfVocab.setText(topicLibraryItem.getsizeOfVocabList() + " thuật ngữ");
         setVocabList();
+
+        // Xử lý sự kiện click cho "Gõ từ"
+//        goTuCardView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                navigateToReviewWordActivity();
+//            }
+//        });
     }
 
     private void setVocabList() {
@@ -89,13 +95,11 @@ public class LearningActivity extends AppCompatActivity {
         speech();
     }
 
-    private void speech(){
+    private void speech() {
         toSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                // if No error is found then only it will run
-                if(status!=TextToSpeech.ERROR){
-                    // To Choose language of speech
+                if (status != TextToSpeech.ERROR) {
                     toSpeech.setLanguage(Locale.UK);
                 }
             }
@@ -109,6 +113,7 @@ public class LearningActivity extends AppCompatActivity {
             }
         });
     }
+
 
     @Override
     public boolean onSupportNavigateUp() {

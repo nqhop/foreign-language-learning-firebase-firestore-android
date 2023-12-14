@@ -88,28 +88,5 @@
 
     </LinearLayout>
 
-<!--    <TextView-->
-<!--        android:id="@+id/flipCardTextView"-->
-<!--        android:background="@drawable/shadow_141323"-->
-
-
-<!--        android:text="Frond"-->
-<!--        android:gravity="center"-->
-<!--        android:textSize="30sp"-->
-<!--        android:layout_width="200dp"-->
-<!--        android:layout_height="300dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--    <ImageView-->
-<!--        android:id="@+id/imageView4"-->
-<!--        android:layout_width="30dp"-->
-<!--        android:layout_height="30dp"-->
-<!--        app:layout_constraintStart_toStartOf="@+id/flipCardTextView"-->
-<!--        app:layout_constraintTop_toTopOf="@+id/flipCardTextView"-->
-<!--        tools:srcCompat="@drawable/baseline_volume_up_24" />-->
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
