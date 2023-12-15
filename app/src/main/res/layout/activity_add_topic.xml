@@ -34,20 +34,35 @@
         android:layout_marginTop="16dp"
         android:hint="Description" />
 
-    <EditText
-        android:id="@+id/editTextImage"
+    <RelativeLayout
+        android:id="@+id/relativeLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/editTextDescription"
-        android:layout_marginTop="16dp"
-        android:hint="Image URL" />
+        android:layout_marginTop="16dp">
+
+        <EditText
+            android:id="@+id/editTextImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/addImageButton"
+            android:hint="Image URL" />
+
+        <ImageButton
+            android:id="@+id/addImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="Choose Image"
+            android:src="@android:drawable/ic_menu_gallery" />
+    </RelativeLayout>
 
     <Button
         android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editTextImage"
-        android:layout_marginTop="16dp"
+        android:layout_below="@+id/relativeLayout3"
+        android:layout_marginTop="22dp"
         android:text="Add Topic" />
 
 </RelativeLayout>

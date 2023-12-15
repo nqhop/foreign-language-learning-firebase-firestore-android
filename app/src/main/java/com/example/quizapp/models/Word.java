@@ -7,7 +7,7 @@ public class Word {
     private String image;
 
     public Word() {
-        // Constructor rỗng cần thiết để sử dụng với Firestore
+        // Empty constructor needed for Firestore
     }
 
     public Word(String english, String vietnamese, String description, String image) {
