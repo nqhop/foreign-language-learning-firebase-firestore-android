@@ -68,13 +68,6 @@ public class LearningActivity extends AppCompatActivity {
         numberOfVocab.setText(topicLibraryItem.getsizeOfVocabList() + " thuật ngữ");
         setVocabList();
 
-        // Xử lý sự kiện click cho "Gõ từ"
-//        goTuCardView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                navigateToReviewWordActivity();
-//            }
-//        });
     }
 
     private void setVocabList() {

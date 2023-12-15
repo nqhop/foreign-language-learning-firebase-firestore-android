@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.example.quizapp.fragments.AddFragment;
 import com.example.quizapp.fragments.HomeFragment;
 import com.example.quizapp.fragments.LibraryFragment;
 import com.example.quizapp.R;
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.settings) {
                 replaceFragment(new SettingsFragment());
 
+            }else if (item.getItemId() == R.id.add) {
+                replaceFragment(new AddFragment());
             }
             return true;
         });

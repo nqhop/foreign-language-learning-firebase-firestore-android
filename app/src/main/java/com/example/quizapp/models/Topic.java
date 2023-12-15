@@ -1,10 +1,35 @@
 package com.example.quizapp.models;
 
-public class Topic {
-    private String name, id;
+import java.util.Map;
 
-    public Topic(String id, String name) {
+public class Topic {
+    private String id;
+    private String name;
+    private Map<String, Word> words; // Map để lưu danh sách từ vựng
+
+    public Topic() {
+
+    }
+
+    public Topic(String id, String name, Map<String, Word> words) {
+        this.id = id;
         this.name = name;
+        this.words = words;
+    }
+
+    public Topic(String name, Map<String, Word> words) {
+        this.name = name;
+        this.words = words;
+    }
+
+    public Topic(String path, String forderName) {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -16,11 +41,11 @@ public class Topic {
         this.name = name;
     }
 
-    public String getId() {
-        return id;
+    public Map<String, Word> getWords() {
+        return words;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setWords(Map<String, Word> words) {
+        this.words = words;
     }
 }

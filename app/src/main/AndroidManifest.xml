@@ -49,7 +49,7 @@
             android:name=".activities.ChangePasswordActivity"
             android:label="Change Password" />
         <activity
-            android:name=".activities.TypeWordActivity"
+            android:name=".activities.AddTopicActivity"
             android:exported="false"/>
       </application>
 
