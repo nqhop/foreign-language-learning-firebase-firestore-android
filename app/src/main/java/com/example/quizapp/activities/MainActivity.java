@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 //        startActivity(new Intent(this, VocabActivity.class));
 
         // test multiple choise
-//        startActivity(new Intent(this, multipleChoiceTestActivity.class));
+        startActivity(new Intent(this, multipleChoiceTestActivity.class));
 
         applyNightMode();
         demoDatabase();
