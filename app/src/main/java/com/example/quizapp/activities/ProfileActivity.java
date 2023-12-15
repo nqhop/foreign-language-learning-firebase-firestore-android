@@ -67,7 +67,7 @@ public class ProfileActivity extends AppCompatActivity {
             String userId = currentUser.getUid();
 
             // Thực hiện truy vấn đến tài liệu người dùng trong Firestore
-            DocumentReference userRef = firestoreDB.collection("users").document(userId);
+            DocumentReference userRef = firestoreDB.collection("Users").document(userId);
 
             userRef.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -75,21 +75,21 @@ public class ProfileActivity extends AppCompatActivity {
 
                     if (document.exists()) {
                         // Lấy thông tin từ tài liệu Firestore
-                        String fullName = document.getString("fullName");
-                        String email = document.getString("email");
+                        String name = document.getString("profile.name");
+                        String email = document.getString("profile.email");
 
                         // Hiển thị thông tin người dùng trên giao diện
                         TextView textViewName = findViewById(R.id.textView2);
                         TextView textViewEmail = findViewById(R.id.textView3);
 
-                        textViewName.setText(fullName);
+                        textViewName.setText(name);
                         textViewEmail.setText(email);
 
                         // Lấy đường dẫn ảnh từ Firestore và cập nhật ImageView bằng Glide
-                        String imageUrl = document.getString("imageUrl");
-                        if (imageUrl != null && !imageUrl.isEmpty()) {
+                        String avatarUrl = document.getString("profile.avatar");
+                        if (avatarUrl != null && !avatarUrl.isEmpty()) {
                             Glide.with(this)
-                                    .load(imageUrl)
+                                    .load(avatarUrl)
                                     .placeholder(R.drawable.ic_placeholder_image)
                                     .error(R.drawable.ic_error_image)
                                     .into(userImageView);
@@ -162,8 +162,8 @@ public class ProfileActivity extends AppCompatActivity {
         if (currentUser != null) {
             String userId = currentUser.getUid();
 
-            DocumentReference userRef = firestoreDB.collection("users").document(userId);
-            userRef.update("imageUrl", imageUrl)
+            DocumentReference userRef = firestoreDB.collection("Users").document(userId);
+            userRef.update("profile.avatar", imageUrl)
                     .addOnCompleteListener(task -> {
                         if (!task.isSuccessful()) {
                             Toast.makeText(ProfileActivity.this, "Failed to update image in Firestore", Toast.LENGTH_SHORT).show();

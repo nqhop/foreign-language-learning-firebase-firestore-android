@@ -76,17 +76,25 @@ public class RegisterActivity extends AppCompatActivity {
     private void saveUserDataToFirestore(String fullName, String email) {
         // Tạo một đối tượng Map để lưu thông tin người dùng
         Map<String, Object> user = new HashMap<>();
-        user.put("fullName", fullName);
-        user.put("email", email);
-        user.put("userType", "regular"); // Thêm userType là "regular"
+        user.put("profile", createProfileData(fullName, email));
 
-        // Lưu thông tin người dùng vào Firestore
-        db.collection("users")
+        // Lưu thông tin người dùng vào Firestore trong collection "Users"
+        db.collection("Users")
                 .document(mAuth.getCurrentUser().getUid())
                 .set(user)
                 .addOnSuccessListener(aVoid ->
                         Toast.makeText(RegisterActivity.this, "Lưu thông tin người dùng thành công", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e ->
                         Toast.makeText(RegisterActivity.this, "Lưu thông tin người dùng thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private Map<String, Object> createProfileData(String fullName, String email) {
+        // Tạo một đối tượng Map để lưu thông tin người dùng trong collection "Profile"
+        Map<String, Object> profileData = new HashMap<>();
+        profileData.put("name", fullName);
+        profileData.put("email", email);
+        profileData.put("avatar", ""); // Bạn có thể thêm trường avatar nếu cần
+
+        return profileData;
     }
 }

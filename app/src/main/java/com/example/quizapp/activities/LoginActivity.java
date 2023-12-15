@@ -15,7 +15,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.quizapp.R;
-import com.example.quizapp.activities.RegisterActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -31,6 +30,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -43,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         etEmail = findViewById(R.id.etEmailLogin);
         etPassword = findViewById(R.id.etPasswordLogin);
@@ -90,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        checkUserDataInFirestore(mAuth.getCurrentUser().getUid());
+                        checkUserDataInDatabase(mAuth.getCurrentUser());
                     } else {
                         Toast.makeText(LoginActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
                     }
@@ -126,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        checkUserDataInFirestore(mAuth.getCurrentUser().getUid());
+                        checkUserDataInDatabase(mAuth.getCurrentUser());
                     } else {
                         Toast.makeText(LoginActivity.this, "Đăng nhập bằng Google thất bại", Toast.LENGTH_SHORT).show();
                     }
@@ -167,37 +172,37 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void checkUserDataInFirestore(String userId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference userRef = db.collection("users").document(userId);
+    private void checkUserDataInDatabase(FirebaseUser user) {
+        if (user != null) {
+            DocumentReference userRef = db.collection("Users").document(user.getUid());
 
-        userRef.get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        // Người dùng tồn tại trong Firestore
-                        String fullName = documentSnapshot.getString("fullName");
-                        String email = documentSnapshot.getString("email");
+            userRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    // DocumentSnapshot contains data read from a document in Firestore
+                    if (task.getResult() != null && task.getResult().exists()) {
+                        // User exists in Firestore
+                        String fullName = task.getResult().getString("profile.name");
+                        String email = task.getResult().getString("profile.email");
 
-
-                        // Thực hiện các hành động sau khi đăng nhập thành công, ví dụ: chuyển đến màn hình chính
+                        // Example: Redirect to the main activity
                         Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this, MainActivity.class)
                                 .putExtra("fullName", fullName)
                                 .putExtra("email", email));
                         finish();
                     } else {
-                        // Người dùng không tồn tại trong Firestore, có thể do lỗi hoặc dữ liệu bị xóa
+                        // User does not exist in Firestore
                         Toast.makeText(LoginActivity.this, "Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
-                        // Đăng xuất người dùng (nếu cần)
+                        // Optional: Sign out the user
                         FirebaseAuth.getInstance().signOut();
                     }
-                })
-                .addOnFailureListener(e -> {
-                    // Xử lý lỗi khi truy vấn Firestore
-                    Toast.makeText(LoginActivity.this, "Lỗi khi xác minh thông tin người dùng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                } else {
+                    // Handle errors while querying Firestore
+                    Toast.makeText(LoginActivity.this, "Lỗi khi kiểm tra thông tin người dùng: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
