@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 //        startActivity(new Intent(this, multipleChoiceTestActivity.class));
 
         //test add topic
-        startActivity(new Intent(this, AddTopicActivity.class));
+//        startActivity(new Intent(this, AddTopicActivity.class));
 
         applyNightMode();
         demoDatabase();
