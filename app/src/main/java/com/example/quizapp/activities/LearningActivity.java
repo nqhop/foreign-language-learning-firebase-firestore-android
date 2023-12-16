@@ -76,6 +76,7 @@ public class LearningActivity extends AppCompatActivity {
         multipleChoice.setOnClickListener(v -> {
             Intent i = new Intent(this, multipleChoiceTestActivity.class);
             i.putParcelableArrayListExtra("vocabListExtra", vocabList);
+            i.putExtra("lengthOfList", vocabList.size());
             startActivity(i);
         });
     }

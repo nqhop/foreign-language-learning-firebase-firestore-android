@@ -34,11 +34,11 @@ import java.util.Set;
 
 public class multipleChoiceTestActivity extends AppCompatActivity {
 
-    TextView starTesting;
+    TextView starTesting, lengthOfVocabEditText;
     EditText numberOfQuestionEditText;
-    int numberOfQuestion;
+    int numberOfQuestion, maxNumberOfQuestion;
     Boolean EnglishIsSelected = true;
-    Dialog dialog;
+    Dialog dialog, dialogQuestion;
     RadioGroup radioGroup;
     TopicLibrary topicLibrary = new TopicLibrary("vegatables", "AaWZ5yEnedL7al8jRhH9", "001", 7, new User("H 2023", "hop@gmail.com", "AaWZ5yEnedL7al8jRhH9"));
     ArrayList<Vocab2> vocabList = new ArrayList<>();
@@ -49,20 +49,18 @@ public class multipleChoiceTestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiple_choice_test);
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle("Multiple choice");
-        }
 
         getMyIntent();
         dialog = new Dialog(this, R.style.FullScreenDialogTheme);
         dialog.setContentView(R.layout.multiple_choice_test_setting);
+        lengthOfVocabEditText = dialog.findViewById(R.id.textView35);
+        lengthOfVocabEditText.setText("Tối đa " +maxNumberOfQuestion);
         dialog.show();
 
         numberOfQuestionEditText = dialog.findViewById(R.id.editTextNumber2);
         radioGroup = dialog.findViewById(R.id.radioGroup);
         starTesting = dialog.findViewById(R.id.textView29);
+
         LinearLayout closeMultipleSetting = dialog.findViewById(R.id.closeMultipleSetting);
         closeMultipleSetting.setOnClickListener(v->{
             startActivity(new Intent(this, LearningActivity.class));
@@ -72,6 +70,8 @@ public class multipleChoiceTestActivity extends AppCompatActivity {
         starTesting.setOnClickListener(v -> {
             String tem = String.valueOf(numberOfQuestionEditText.getText());
             numberOfQuestion = tem.length() <= 0 ? vocabList.size() : Integer.parseInt(tem);
+            if(numberOfQuestion > maxNumberOfQuestion)
+                numberOfQuestion = maxNumberOfQuestion;
 
             int selectedId = radioGroup.getCheckedRadioButtonId();
             RadioButton radioButton = dialog.findViewById(selectedId);
@@ -90,6 +90,7 @@ public class multipleChoiceTestActivity extends AppCompatActivity {
     private void getMyIntent() {
         Intent intent = getIntent();
         ArrayList<Vocab2> vocabListExtra = intent.getParcelableArrayListExtra("vocabListExtra");
+        maxNumberOfQuestion = intent.getIntExtra("lengthOfList", 0);
         if(vocabListExtra != null){
             vocabList = vocabListExtra;
         }
@@ -129,6 +130,11 @@ public class multipleChoiceTestActivity extends AppCompatActivity {
         resultMultipleOptionTest.setAdapter(adapter);
         resultMultipleOptionTest.setLayoutManager(new LinearLayoutManager(this));
 
+        LinearLayout closeMutipleChoiseResult = resultDialog.findViewById(R.id.closeMutipleChoiseResult);
+        closeMutipleChoiseResult.setOnClickListener(v -> {
+            finish();
+        });
+
 
         correctTextView.setText(Integer.toString(countCorrectOption));
         wrongTextVIew.setText(Integer.toString(numberOfQuestion - countCorrectOption));
@@ -167,7 +173,10 @@ public class multipleChoiceTestActivity extends AppCompatActivity {
         vocabList.add(new Vocab2("coconut", "trái dừa", "new", Timestamp.now(), Timestamp.now(), false));
     }
     private void createTheDialogTest(int index, List indexList) {
-        Dialog dialogQuestion = new Dialog(this, R.style.FullScreenDialogThemeWithActionBar);
+//        if(dialogQuestion != null && dialogQuestion.isShowing()){
+//            dialogQuestion.dismiss();
+//        }
+        dialogQuestion = new Dialog(this, R.style.FullScreenDialogThemeWithActionBar);
         dialogQuestion.setContentView(R.layout.multiple_choice_test_question);
         TextView question = dialogQuestion.findViewById(R.id.textView26);
         question.setText(EnglishIsSelected ? vocabList.get(index).getWord() : vocabList.get(index).getMeaning());

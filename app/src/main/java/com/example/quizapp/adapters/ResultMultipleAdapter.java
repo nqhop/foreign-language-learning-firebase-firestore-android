@@ -75,7 +75,26 @@ public class ResultMultipleAdapter extends RecyclerView.Adapter<ResultMultipleAd
                 }else {
                     toSpeechVietNam.speak(question, toSpeechVietNam.QUEUE_FLUSH, null);
                 }
-
+            }
+        });
+        holder.speechvocabCorrectOption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(EnglishIsSelected){
+                    toSpeechVietNam.speak(correctOption, toSpeechVietNam.QUEUE_FLUSH, null);
+                }else {
+                    toSpeech.speak(correctOption, toSpeech.QUEUE_FLUSH, null);
+                }
+            }
+        });
+        holder.speechvocabwrongOption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(EnglishIsSelected){
+                    toSpeechVietNam.speak(wrongOption, toSpeechVietNam.QUEUE_FLUSH, null);
+                }else {
+                    toSpeech.speak(wrongOption, toSpeech.QUEUE_FLUSH, null);
+                }
             }
         });
 

@@ -81,14 +81,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Số lượng câu hỏi" />
+                android:text="Số lượng câu hỏi:" />
 
             <EditText
                 android:id="@+id/editTextNumber2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ems="10"
+                android:ems="5"
                 android:inputType="number" />
+
+            <TextView
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:id="@+id/textView35"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="TextView" />
         </LinearLayout>
 
         <TextView
