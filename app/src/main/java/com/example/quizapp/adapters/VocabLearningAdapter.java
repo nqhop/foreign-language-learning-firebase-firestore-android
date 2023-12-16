@@ -24,7 +24,7 @@ public class VocabLearningAdapter extends RecyclerView.Adapter<VocabLearningAdap
 
     private Context context;
     private ArrayList<Vocab2> vocabList;
-    TextToSpeech toSpeech;
+    TextToSpeech toSpeech, toSpeechVietNam;
 
     public VocabLearningAdapter(Context context, ArrayList<Vocab2> vocabList) {
         this.context = context;

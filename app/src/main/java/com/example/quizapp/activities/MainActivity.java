@@ -20,8 +20,11 @@ import com.example.quizapp.fragments.LibraryFragment;
 import com.example.quizapp.R;
 import com.example.quizapp.fragments.SettingsFragment;
 import com.example.quizapp.databinding.ActivityMainBinding;
+import com.example.quizapp.models.TopicLibrary;
+import com.example.quizapp.models.User;
 import com.example.quizapp.utils.FirebaseUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 //        startActivity(new Intent(this, VocabActivity.class));
 
         // test multiple choise
-        startActivity(new Intent(this, multipleChoiceTestActivity.class));
+//        startActivity(new Intent(this, multipleChoiceTestActivity.class));
 
         applyNightMode();
         demoDatabase();
@@ -128,6 +131,30 @@ public class MainActivity extends AppCompatActivity {
         updates.put("age", 15);
         collectionRef.document("zmyQmvdLc3DRhAAxlMOG").update(updates);
         collectionRef.document("demo").set(updates);
+
+
+        firestore.collection("users").document("zUzSlBn2i3hmyOqpSLtFYxlTyC22").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+//                        String fieldValue = document.getString("email");
+                        Log.d("demoDatabase ", document.getData().toString());
+                    } else {
+                        // Handle the case where the document does not exist
+                    }
+                } else {
+                    // Handle exceptions or errors that occurred while retrieving the document
+                }
+            }
+        });
+        firestore.collection("users").document(userId1).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Log.d("demoDatabase", " documentSnapshot: " + documentSnapshot.getData());
+            }
+        });
     }
 
     private void deleteVocab(String userID, String topicCreatedId){

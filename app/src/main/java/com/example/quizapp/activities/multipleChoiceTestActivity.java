@@ -1,6 +1,8 @@
 package com.example.quizapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -11,6 +13,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.quizapp.R;
+import com.example.quizapp.adapters.ResultMultipleAdapter;
+import com.example.quizapp.models.MultipleChoiseResult;
 import com.example.quizapp.models.TopicLibrary;
 import com.example.quizapp.models.User;
 import com.example.quizapp.models.Vocab2;
@@ -83,18 +87,28 @@ public class multipleChoiceTestActivity extends AppCompatActivity {
 
     private void resultActivity() {
         int countCorrectOption = 0;
+        ArrayList<MultipleChoiseResult> resultsList = new ArrayList<>();
+
         for(int i = 0; i < numberOfQuestion; i++){
             Log.d("resultActivity", "resultActivity " + correctOption.get(i) + ", " + userOption.get(i));
+            resultsList.add(new MultipleChoiseResult(EnglishIsSelected, EnglishIsSelected ? vocabList.get(i).getWord() : vocabList.get(i).getMeaning(), correctOption.get(i), userOption.get(i)));
             if(correctOption.get(i) == userOption.get(i))
                 countCorrectOption++;
         }
+
         Dialog resultDialog = new Dialog(this, R.style.FullScreenDialogTheme);
         resultDialog.setContentView(R.layout.multiple_choice_test_result);
         TextView correctTextView = resultDialog.findViewById(R.id.textView32);
         TextView wrongTextVIew = resultDialog.findViewById(R.id.textView33);
+        RecyclerView resultMultipleOptionTest = resultDialog.findViewById(R.id.multipleChoiseResultRecyclerView);
+        ResultMultipleAdapter adapter = new ResultMultipleAdapter(this, resultsList);
+        resultMultipleOptionTest.setAdapter(adapter);
+        resultMultipleOptionTest.setLayoutManager(new LinearLayoutManager(this));
+
 
         correctTextView.setText(Integer.toString(countCorrectOption));
         wrongTextVIew.setText(Integer.toString(numberOfQuestion - countCorrectOption));
+
         resultDialog.show();
     }
 
