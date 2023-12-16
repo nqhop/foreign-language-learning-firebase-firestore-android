@@ -57,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
         // test multiple choise
 //        startActivity(new Intent(this, multipleChoiceTestActivity.class));
 
+        //test add topic
+        startActivity(new Intent(this, AddTopicActivity.class));
+
         applyNightMode();
         demoDatabase();
 //        deleteVocab(userId1, "001");

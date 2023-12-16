@@ -1,4 +1,5 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,61 +9,83 @@
         android:id="@+id/editTextTopicName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Topic Name" />
-
-    <EditText
-        android:id="@+id/editTextEnglish"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/editTextTopicName"
         android:layout_marginTop="16dp"
-        android:hint="English" />
+        android:hint="Topic Name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editTextVietnamese"
+<!--    <RelativeLayout-->
+<!--        android:id="@+id/relativeLayout3"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/editTextTopicName">-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/editTextImage"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_toStartOf="@id/addImageButton"-->
+<!--            android:hint="Image URL" />-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/addImageButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:contentDescription="Choose Image"-->
+<!--            android:src="@android:drawable/ic_menu_gallery" />-->
+<!--    </RelativeLayout>-->
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editTextEnglish"
-        android:layout_marginTop="16dp"
-        android:hint="Vietnamese" />
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTopicName"
+        tools:layout_editor_absoluteX="16dp">
 
-    <EditText
-        android:id="@+id/editTextDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/editTextVietnamese"
-        android:layout_marginTop="16dp"
-        android:hint="Description" />
-
-    <RelativeLayout
-        android:id="@+id/relativeLayout3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/editTextDescription"
-        android:layout_marginTop="16dp">
-
-        <EditText
-            android:id="@+id/editTextImage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/addImageButton"
-            android:hint="Image URL" />
-
-        <ImageButton
-            android:id="@+id/addImageButton"
+        <TextView
+            android:id="@+id/textView40"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:contentDescription="Choose Image"
-            android:src="@android:drawable/ic_menu_gallery" />
-    </RelativeLayout>
+            android:layout_marginTop="8dp"
+            android:text="Danh sách từ"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="80dp"
+            android:text="Thêm từ" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="120dp"
+        app:layout_constraintBottom_toTopOf="@+id/addButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/linearLayoutVocabList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" />
+    </ScrollView>
 
     <Button
         android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/relativeLayout3"
-        android:layout_marginTop="22dp"
-        android:text="Add Topic" />
+        android:text="Add Topic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
