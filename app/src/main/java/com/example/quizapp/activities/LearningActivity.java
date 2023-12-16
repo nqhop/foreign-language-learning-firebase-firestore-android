@@ -37,13 +37,12 @@ import java.util.Map;
 public class LearningActivity extends AppCompatActivity {
 
     TextView nameOfTopic, userName, numberOfVocab;
-    CardView flashCardView;
+    CardView flashCardView, multipleChoice;
     RecyclerView learningVocabRecyclerView;
     ArrayList<Vocab2> vocabList;
     TextToSpeech toSpeech;
     String collection = "", userID, topicID;
     FirebaseFirestore firestore;
-    CardView multipleChoice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +72,12 @@ public class LearningActivity extends AppCompatActivity {
         setVocabList();
 
         // learning options
+        flashCardView.setOnClickListener(v -> {
+            Intent i = new Intent(this, VocabActivity.class);
+            i.putParcelableArrayListExtra("vocabListExtra", vocabList);
+            startActivity(i);
+        });
+
         multipleChoice.setOnClickListener(v -> {
             Intent i = new Intent(this, multipleChoiceTestActivity.class);
             i.putParcelableArrayListExtra("vocabListExtra", vocabList);

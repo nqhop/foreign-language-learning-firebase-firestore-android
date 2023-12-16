@@ -71,6 +71,7 @@ public class VocabActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vocab);
 
+        getMyIntent();
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.custom_action_bar);
@@ -94,7 +95,7 @@ public class VocabActivity extends AppCompatActivity {
         animator2.setInterpolator(new AccelerateInterpolator());
 
         initData();
-        fexData();
+//        fexData();
         word = vocabList.get(0).getWord();
         flipCardTextView.setText(word);
         meaning = vocabList.get(0).getMeaning();
@@ -107,6 +108,21 @@ public class VocabActivity extends AppCompatActivity {
 
         setOnClickForFlipCard();
     }
+
+    private void getMyIntent() {
+        Intent intent = getIntent();
+        ArrayList<Vocab2> vocabListExtra = intent.getParcelableArrayListExtra("vocabListExtra");
+        if(vocabListExtra != null){
+            vocabList = vocabListExtra;
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
     private void initData(){
         setTextAndFrondOrBack = new setTextAndFrondOrBackRunnable() {
             @Override
@@ -146,14 +162,13 @@ public class VocabActivity extends AppCompatActivity {
         });
     }
 
-    private void fexData(){
-
-        vocabList.add(new Vocab2("Apple", "qủa táo", "new", Timestamp.now(), Timestamp.now(), false));
-        vocabList.add(new Vocab2("Avocado", "qủa bơ", "new", Timestamp.now(), Timestamp.now(), false));
-        vocabList.add(new Vocab2("Strawberry", "dâu tây", "new", Timestamp.now(), Timestamp.now(), false));
-        vocabList.add(new Vocab2("watermelon", "dưa hấu", "new", Timestamp.now(), Timestamp.now(), false));
-        vocabList.add(new Vocab2("mango", "trái xoài", "new", Timestamp.now(), Timestamp.now(), false));
-    }
+//    private void fexData(){
+//        vocabList.add(new Vocab2("Apple", "qủa táo", "new", Timestamp.now(), Timestamp.now(), false));
+//        vocabList.add(new Vocab2("Avocado", "qủa bơ", "new", Timestamp.now(), Timestamp.now(), false));
+//        vocabList.add(new Vocab2("Strawberry", "dâu tây", "new", Timestamp.now(), Timestamp.now(), false));
+//        vocabList.add(new Vocab2("watermelon", "dưa hấu", "new", Timestamp.now(), Timestamp.now(), false));
+//        vocabList.add(new Vocab2("mango", "trái xoài", "new", Timestamp.now(), Timestamp.now(), false));
+//    }
 
     private void createTheDialog(){
         // set the translucent overlay on the current activity
