@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         collectionRef.document("demo").set(updates);
 
 
-        firestore.collection("users").document("zUzSlBn2i3hmyOqpSLtFYxlTyC22").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        firestore.collection("Users").document(userId1).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        firestore.collection("users").document(userId1).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        firestore.collection("Users").document(userId1).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Log.d("demoDatabase", " documentSnapshot: " + documentSnapshot.getData());

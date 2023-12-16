@@ -1,13 +1,16 @@
 package com.example.quizapp.activities;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -46,6 +49,13 @@ public class multipleChoiceTestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiple_choice_test);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle("Multiple choice");
+        }
+
+        getMyIntent();
         dialog = new Dialog(this, R.style.FullScreenDialogTheme);
         dialog.setContentView(R.layout.multiple_choice_test_setting);
         dialog.show();
@@ -53,6 +63,12 @@ public class multipleChoiceTestActivity extends AppCompatActivity {
         numberOfQuestionEditText = dialog.findViewById(R.id.editTextNumber2);
         radioGroup = dialog.findViewById(R.id.radioGroup);
         starTesting = dialog.findViewById(R.id.textView29);
+        LinearLayout closeMultipleSetting = dialog.findViewById(R.id.closeMultipleSetting);
+        closeMultipleSetting.setOnClickListener(v->{
+            startActivity(new Intent(this, LearningActivity.class));
+        });
+
+
         starTesting.setOnClickListener(v -> {
             String tem = String.valueOf(numberOfQuestionEditText.getText());
             numberOfQuestion = tem.length() <= 0 ? vocabList.size() : Integer.parseInt(tem);
@@ -66,9 +82,17 @@ public class multipleChoiceTestActivity extends AppCompatActivity {
             loopQuestion(0);
         });
 
-        fexData();
+//        fexData();
 //        createTheDialogTest();
 
+    }
+
+    private void getMyIntent() {
+        Intent intent = getIntent();
+        ArrayList<Vocab2> vocabListExtra = intent.getParcelableArrayListExtra("vocabListExtra");
+        if(vocabListExtra != null){
+            vocabList = vocabListExtra;
+        }
     }
 
     private void loopQuestion(int index){

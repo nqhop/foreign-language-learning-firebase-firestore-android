@@ -43,6 +43,7 @@ public class LearningActivity extends AppCompatActivity {
     TextToSpeech toSpeech;
     String collection = "", userID, topicID;
     FirebaseFirestore firestore;
+    CardView multipleChoice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class LearningActivity extends AppCompatActivity {
         numberOfVocab = findViewById(R.id.textView18);
         learningVocabRecyclerView = findViewById(R.id.learningVocabRecyclerView);
         flashCardView = findViewById(R.id.cardView);
+        multipleChoice = findViewById(R.id.cardView3);
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -69,6 +71,13 @@ public class LearningActivity extends AppCompatActivity {
         userName.setText(topicLibraryItem.getUser().getName());
         numberOfVocab.setText(topicLibraryItem.getsizeOfVocabList() + " thuật ngữ");
         setVocabList();
+
+        // learning options
+        multipleChoice.setOnClickListener(v -> {
+            Intent i = new Intent(this, multipleChoiceTestActivity.class);
+            i.putParcelableArrayListExtra("vocabListExtra", vocabList);
+            startActivity(i);
+        });
     }
 
     private void setVocabList() {
