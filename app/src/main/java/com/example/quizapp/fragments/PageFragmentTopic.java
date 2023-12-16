@@ -116,9 +116,11 @@ public class PageFragmentTopic extends Fragment implements RecyclerViewInterface
         }
     }
     private void getUserAndAddToList(String userID, String topicID, String name, int size, boolean isGetAllTopic){
-        firestore.collection("users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        Log.d("PageFragmentTopic", "getUserAndAddToList userID: " + userID);
+        firestore.collection("Users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Log.d("PageFragmentTopic", " documentSnapshot: " + documentSnapshot.getData());
                 myTopicLibraries.add(new TopicLibrary(name, userID, topicID, size, new User((String) documentSnapshot.getData().get("fullName"), (String) documentSnapshot.getData().get("email"), documentSnapshot.getId())));
 
                 if(isGetAllTopic){

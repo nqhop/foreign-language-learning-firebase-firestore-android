@@ -1,5 +1,7 @@
 package com.example.quizapp.activities;
 
+import static java.security.AccessController.getContext;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -21,6 +23,7 @@ import com.example.quizapp.adapters.VocabLearningAdapter;
 import com.example.quizapp.models.TopicLibrary;
 import com.example.quizapp.models.Vocab2;
 import com.example.quizapp.utils.FirebaseUtils;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,12 +37,13 @@ import java.util.Map;
 public class LearningActivity extends AppCompatActivity {
 
     TextView nameOfTopic, userName, numberOfVocab;
-    CardView flashCardView, goTuCardView; // Thêm biến goTuCardView
+    CardView flashCardView;
     RecyclerView learningVocabRecyclerView;
     ArrayList<Vocab2> vocabList;
     TextToSpeech toSpeech;
     String collection = "", userID, topicID;
     FirebaseFirestore firestore;
+    CardView multipleChoice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +54,9 @@ public class LearningActivity extends AppCompatActivity {
         numberOfVocab = findViewById(R.id.textView18);
         learningVocabRecyclerView = findViewById(R.id.learningVocabRecyclerView);
         flashCardView = findViewById(R.id.cardView);
-        goTuCardView = findViewById(R.id.cardView2); // Khai báo goTuCardView
+        multipleChoice = findViewById(R.id.cardView3);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
+        if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle("Learning");
         }
@@ -68,6 +72,13 @@ public class LearningActivity extends AppCompatActivity {
         numberOfVocab.setText(topicLibraryItem.getsizeOfVocabList() + " thuật ngữ");
         setVocabList();
 
+        // learning options
+        multipleChoice.setOnClickListener(v -> {
+            Intent i = new Intent(this, multipleChoiceTestActivity.class);
+            i.putParcelableArrayListExtra("vocabListExtra", vocabList);
+            i.putExtra("lengthOfList", vocabList.size());
+            startActivity(i);
+        });
     }
 
     private void setVocabList() {
@@ -88,11 +99,13 @@ public class LearningActivity extends AppCompatActivity {
         speech();
     }
 
-    private void speech() {
+    private void speech(){
         toSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if (status != TextToSpeech.ERROR) {
+                // if No error is found then only it will run
+                if(status!=TextToSpeech.ERROR){
+                    // To Choose language of speech
                     toSpeech.setLanguage(Locale.UK);
                 }
             }
@@ -106,7 +119,6 @@ public class LearningActivity extends AppCompatActivity {
             }
         });
     }
-
 
     @Override
     public boolean onSupportNavigateUp() {
