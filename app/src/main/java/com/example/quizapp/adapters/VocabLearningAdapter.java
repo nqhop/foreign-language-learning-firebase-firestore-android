@@ -7,14 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quizapp.R;
-import com.example.quizapp.activities.LearningActivity;
-import com.example.quizapp.models.TopicLibrary;
 import com.example.quizapp.models.Vocab2;
 
 import java.util.ArrayList;
@@ -24,7 +21,17 @@ public class VocabLearningAdapter extends RecyclerView.Adapter<VocabLearningAdap
 
     private Context context;
     private ArrayList<Vocab2> vocabList;
-    TextToSpeech toSpeech, toSpeechVietNam;
+    private TextToSpeech toSpeech;
+
+    private OnItemClickListener onItemClickListener;
+
+    public interface OnItemClickListener {
+        void onItemClick(Vocab2 vocab);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
 
     public VocabLearningAdapter(Context context, ArrayList<Vocab2> vocabList) {
         this.context = context;
@@ -42,21 +49,20 @@ public class VocabLearningAdapter extends RecyclerView.Adapter<VocabLearningAdap
     @Override
     public void onBindViewHolder(@NonNull MyviewHolder holder, int position) {
         String vocabWord = vocabList.get(position).getWord();
-        toSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status!=TextToSpeech.ERROR){
-                    toSpeech.setLanguage(Locale.UK);
-                }
+        toSpeech = new TextToSpeech(context, status -> {
+            if (status != TextToSpeech.ERROR) {
+                toSpeech.setLanguage(Locale.UK);
             }
         });
 
         holder.word.setText(vocabList.get(position).getWord());
         holder.meaning.setText(vocabList.get(position).getMeaning());
-        holder.speech.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toSpeech.speak(vocabWord, toSpeech.QUEUE_FLUSH, null);
+        holder.speech.setOnClickListener(v -> toSpeech.speak(vocabWord, toSpeech.QUEUE_FLUSH, null));
+
+        // Handle item click
+        holder.itemView.setOnClickListener(v -> {
+            if (onItemClickListener != null) {
+                onItemClickListener.onItemClick(vocabList.get(position));
             }
         });
     }
@@ -66,9 +72,10 @@ public class VocabLearningAdapter extends RecyclerView.Adapter<VocabLearningAdap
         return vocabList.size();
     }
 
-    public static class MyviewHolder extends RecyclerView.ViewHolder{
+    public static class MyviewHolder extends RecyclerView.ViewHolder {
         TextView word, meaning;
         ImageView speech;
+
         public MyviewHolder(@NonNull View itemView) {
             super(itemView);
             word = itemView.findViewById(R.id.textView19);

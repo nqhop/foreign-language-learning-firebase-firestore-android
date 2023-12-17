@@ -51,6 +51,9 @@
         <activity
             android:name=".activities.AddTopicActivity"
             android:exported="false"/>
+        <activity
+            android:name=".activities.WordTestActivity"
+            android:exported="false"/>
       </application>
 
 </manifest>
