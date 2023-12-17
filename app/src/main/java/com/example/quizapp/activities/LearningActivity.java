@@ -2,18 +2,21 @@ package com.example.quizapp.activities;
 
 import static java.security.AccessController.getContext;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +46,7 @@ public class LearningActivity extends AppCompatActivity {
     TextToSpeech toSpeech;
     String collection = "", userID, topicID;
     FirebaseFirestore firestore;
+    TopicLibrary topicLibraryItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +64,7 @@ public class LearningActivity extends AppCompatActivity {
             actionBar.setTitle("Learning");
         }
         Intent intent = getIntent();
-        TopicLibrary topicLibraryItem = (TopicLibrary) intent.getSerializableExtra("TopicLibraryItem");
+        topicLibraryItem = (TopicLibrary) intent.getSerializableExtra("TopicLibraryItem");
         collection = topicLibraryItem.isCreated() ? "topicCreated" : "topicSaved";
         userID = topicLibraryItem.getUserID();
         topicID = topicLibraryItem.getTopicID();
@@ -136,5 +140,26 @@ public class LearningActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.vocab_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId()== R.id.edit){
+            Intent intent = new Intent(this, AddTopicActivity.class);
+            intent.putExtra("nameOfTopic", topicLibraryItem.getName());
+            intent.putParcelableArrayListExtra("vocabListExtra", vocabList);
+            intent.putExtra("topicID", topicLibraryItem.getTopicID());
+            startActivityForResult(intent, 111);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 111 && resultCode == Activity.RESULT_OK) {
+            // Handle the result here
+            Log.d("LearingActivity", "onActivityResult");
+        }
     }
 }

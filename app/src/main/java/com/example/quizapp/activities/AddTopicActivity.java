@@ -25,6 +25,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.quizapp.R;
 import com.example.quizapp.fragments.AddFragment;
+import com.example.quizapp.models.Vocab2;
 import com.example.quizapp.models.Word;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -59,28 +60,33 @@ public class AddTopicActivity extends AppCompatActivity {
     List<View> rootViewList = new ArrayList<>();
     List<String> wordList = new ArrayList<>();
     List<String> wordMeaningList = new ArrayList<>();
-    String topicName;
+    String topicName, topicID;
+    Button addButton;
+    Boolean isUpdate = false;
+    ArrayList<Vocab2> vocabListExtra;
+    FirebaseFirestore firestore;
+    String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_topic);
+        firestore = FirebaseFirestore.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+//      userID = auth.getCurrentUser().getUid();
+        userID = "AaWZ5yEnedL7al8jRhH9";
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         linearLayoutVocabList = findViewById(R.id.linearLayoutVocabList);
         topicNameEditText = findViewById(R.id.editTextTopicName);
         button = findViewById(R.id.button);
         button.setOnClickListener(v -> {
-            addNewVocab();
+            addNewVocab("", "");
         });
-
-
 
         // Initialize StorageReference
         storageReference = FirebaseStorage.getInstance().getReference("images");
 
-
-
-        Button addButton = findViewById(R.id.addButton);
+        addButton = findViewById(R.id.addButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,6 +101,26 @@ public class AddTopicActivity extends AppCompatActivity {
                 addTopic2();
             }
         });
+        getMyIntent();
+    }
+
+    private void getMyIntent() {
+        Intent intent = getIntent();
+        if(intent.hasExtra("nameOfTopic")){
+            isUpdate = true;
+            topicName = intent.getStringExtra("nameOfTopic");
+            vocabListExtra = intent.getParcelableArrayListExtra("vocabListExtra");
+            topicID = intent.getStringExtra("topicID");
+            topicNameEditText.setText(topicName);
+            addButton.setText("Update");
+            Log.d("AddTopicActivity", topicName);
+            Log.d("AddTopicActivity", topicID);
+            for(int i = 0; i < vocabListExtra.size(); i++){
+                addNewVocab(vocabListExtra.get(i).getWord(), vocabListExtra.get(i).getMeaning());
+            }
+        }
+
+
     }
 
     private void addTopic2() {
@@ -103,43 +129,17 @@ public class AddTopicActivity extends AppCompatActivity {
             Toast.makeText(this, "Please fill in the topic name", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-//        String userId = auth.getCurrentUser().getUid();
-        String userID = "AaWZ5yEnedL7al8jRhH9";
-
-        Map<String, Object> topicInfo = new HashMap<>();
-        topicInfo.put("name", topicName);
         CollectionReference collectionRef = firestore.collection("topic");
-        collectionRef.document(userID).collection("topicCreated").add(topicInfo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                for(int i = 0; i < wordList.size(); i++){
-                    Log.d("addTopicActivity","word 2:" + wordList.get(i));
-                    Map<String, Object> vocab = new HashMap<>();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        vocab.put("created_at", Timestamp.from(Instant.now()));
-                        vocab.put("update_at", Timestamp.from(Instant.now()));
-                    }
-                    vocab.put("star", false);
-                    vocab.put("status", "new");
-
-                    vocab.put("vietnameses_meaning", wordMeaningList.get(i));
-                    vocab.put("word", wordList.get(i).toLowerCase());
-                    collectionRef.document(userID).collection("topicCreated").document(documentReference.getId()).collection("vocab").add(vocab);
+        if(isUpdate){
+            collectionRef.document(userID).collection("topicCreated").document(topicID).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    addOrUpdateTopic();
                 }
-                Toast.makeText(AddTopicActivity.this, "Topic added successfully", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(AddTopicActivity.this, "Error adding topic", Toast.LENGTH_SHORT).show();
-            }
-        });
-//        collectionRef.document(userID).collection("topicCreated").document("005").set(topicInfo);
-
+            });
+        }else {
+            addOrUpdateTopic();
+        }
 
 
 //        DocumentReference topicRef = firestore.collection("Users").document(userId)
@@ -156,8 +156,45 @@ public class AddTopicActivity extends AppCompatActivity {
 //                    }
 //                });
     }
+    private void addOrUpdateTopic(){
+        Map<String, Object> topicInfo = new HashMap<>();
+        topicInfo.put("name", topicName);
+        CollectionReference collectionRef = firestore.collection("topic");
+        collectionRef.document(userID).collection("topicCreated").add(topicInfo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                for(int i = 0; i < wordList.size(); i++){
+                    Log.d("addTopicActivity","word 2:" + wordList.get(i));
+                    Map<String, Object> vocab = setMapOfVocab(i);
+                    collectionRef.document(userID).collection("topicCreated").document(documentReference.getId()).collection("vocab").add(vocab);
+                }
+                Toast.makeText(AddTopicActivity.this, "Successfully", Toast.LENGTH_SHORT).show();
+//                Intent resultIntent = new Intent();
+//                setResult(Activity.RESULT_OK, resultIntent);
+//                finish();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(AddTopicActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private Map<String, Object> setMapOfVocab(int index){
+        Map<String, Object> vocab = new HashMap<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vocab.put("created_at", Timestamp.from(Instant.now()));
+            vocab.put("update_at", Timestamp.from(Instant.now()));
+        }
+        vocab.put("star", false);
+        vocab.put("status", "new");
 
-    private void addNewVocab() {
+        vocab.put("vietnameses_meaning", wordMeaningList.get(index));
+        vocab.put("word", wordList.get(index).toLowerCase());
+        return vocab;
+    }
+
+    private void addNewVocab(String word, String wordMeaning) {
         View rootViewNewVocabItem = inflater.inflate(R.layout.add_new_vocab_item, null);
         linearLayoutVocabList.addView(rootViewNewVocabItem);
         rootViewList.add(rootViewNewVocabItem);
@@ -166,6 +203,13 @@ public class AddTopicActivity extends AppCompatActivity {
             linearLayoutVocabList.removeView(rootViewNewVocabItem);
             rootViewList.remove(rootViewNewVocabItem);
         });
+
+        if(isUpdate){
+            TextView wordTextView = rootViewNewVocabItem.findViewById(R.id.editTextText);
+            TextView wordMeaningTextView = rootViewNewVocabItem.findViewById(R.id.editTextText2);
+            wordTextView.setText(word);
+            wordMeaningTextView.setText(wordMeaning);
+        }
     }
 
     private void openImageChooser() {
