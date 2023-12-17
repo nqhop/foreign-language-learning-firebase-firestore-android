@@ -6,10 +6,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -23,17 +27,22 @@ import android.widget.Toast;
 
 import com.example.quizapp.R;
 import com.example.quizapp.adapters.VocabLearningAdapter;
+import com.example.quizapp.fragments.LibraryFragment;
 import com.example.quizapp.models.TopicLibrary;
 import com.example.quizapp.models.Vocab2;
 import com.example.quizapp.utils.FirebaseUtils;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -44,6 +53,7 @@ public class LearningActivity extends AppCompatActivity {
     RecyclerView learningVocabRecyclerView;
     ArrayList<Vocab2> vocabList;
     TextToSpeech toSpeech;
+    String UserIDAcount = "AaWZ5yEnedL7al8jRhH9";
     String collection = "", userID, topicID;
     FirebaseFirestore firestore;
     TopicLibrary topicLibraryItem;
@@ -139,6 +149,14 @@ public class LearningActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.vocab_menu, menu);
+        Log.d("onCreateOptionsMenu", UserIDAcount);
+        Log.d("onCreateOptionsMenu", userID);
+        MenuItem menuItemEdit = menu.findItem(R.id.edit);
+        MenuItem menuItemPrivacyTopic = menu.findItem(R.id.privacyTopic);
+        if(!UserIDAcount.equals(userID)){
+            menuItemEdit.setVisible(false);
+            menuItemPrivacyTopic.setVisible(false);
+        }
         return true;
     }
 
@@ -151,15 +169,57 @@ public class LearningActivity extends AppCompatActivity {
             intent.putExtra("topicID", topicLibraryItem.getTopicID());
             startActivityForResult(intent, 111);
             startActivity(intent);
+        } else if (item.getItemId() == R.id.privacyTopic) {
+            setPrivacyTopic();
         }
         return super.onOptionsItemSelected(item);
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 111 && resultCode == Activity.RESULT_OK) {
-            // Handle the result here
-            Log.d("LearingActivity", "onActivityResult");
-        }
+
+    private void setPrivacyTopic() {
+        firestore = FirebaseUtils.getFirestoreInstance();
+        DocumentReference collectionRef = firestore.collection("topic").document(userID);
+        collectionRef.collection(collection).document(topicID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Object fieldValue = document.get("privacy");
+                        // Use the fieldValue as needed
+                        Log.d("setPrivacyTopic", "Field value: " + fieldValue);
+                        showMyAlert((String) fieldValue);
+                    }
+                }
+            }
+        });
+    }
+
+    private void showMyAlert(String privacy) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Chuyển chế độ của topic");
+        alertDialogBuilder.setMessage(privacy.equals("private") ? "Chuyển sang chế độ công khai" : "Chuyển sang chế độ riêng tư");
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setPositiveButton("Chuyển", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                updatePrivacyForTopic(privacy);
+            }
+        });
+        alertDialogBuilder.setNeutralButton("Hủy", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    private void updatePrivacyForTopic(String privacy){
+        Map<String, Object> privacyUpdate = new HashMap<>();
+        privacyUpdate.put("privacy", privacy.equals("private") ? "public" : "private");
+        DocumentReference collectionRef = firestore.collection("topic").document(userID);
+        collectionRef.collection(collection).document(topicID).update(privacyUpdate);
     }
 }

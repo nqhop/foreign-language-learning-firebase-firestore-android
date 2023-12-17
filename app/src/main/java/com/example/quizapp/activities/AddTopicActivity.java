@@ -25,10 +25,13 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.quizapp.R;
 import com.example.quizapp.fragments.AddFragment;
+import com.example.quizapp.fragments.LibraryFragment;
 import com.example.quizapp.models.Vocab2;
 import com.example.quizapp.models.Word;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -99,7 +102,10 @@ public class AddTopicActivity extends AppCompatActivity {
                     wordMeaningList.add(String.valueOf(wordMeaning.getText()));
                 }
                 addTopic2();
+                Log.d("AddTopicActivity", "finish--------");
+                finish();
             }
+
         });
         getMyIntent();
     }
@@ -131,15 +137,16 @@ public class AddTopicActivity extends AppCompatActivity {
         }
         CollectionReference collectionRef = firestore.collection("topic");
         if(isUpdate){
-            collectionRef.document(userID).collection("topicCreated").document(topicID).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            collectionRef.document(userID).collection("topicCreated").document(topicID).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
-                public void onSuccess(Void unused) {
+                public void onComplete(@NonNull Task<Void> task) {
                     addOrUpdateTopic();
                 }
             });
         }else {
             addOrUpdateTopic();
         }
+        finish();
 
 
 //        DocumentReference topicRef = firestore.collection("Users").document(userId)
@@ -158,6 +165,7 @@ public class AddTopicActivity extends AppCompatActivity {
     }
     private void addOrUpdateTopic(){
         Map<String, Object> topicInfo = new HashMap<>();
+        topicName = topicNameEditText.getText().toString();
         topicInfo.put("name", topicName);
         CollectionReference collectionRef = firestore.collection("topic");
         collectionRef.document(userID).collection("topicCreated").add(topicInfo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -169,11 +177,20 @@ public class AddTopicActivity extends AppCompatActivity {
                     collectionRef.document(userID).collection("topicCreated").document(documentReference.getId()).collection("vocab").add(vocab);
                 }
                 Toast.makeText(AddTopicActivity.this, "Successfully", Toast.LENGTH_SHORT).show();
-//                Intent resultIntent = new Intent();
-//                setResult(Activity.RESULT_OK, resultIntent);
-//                finish();
+
+                // Restart the app
+                Intent intent = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
             }
-        }).addOnFailureListener(new OnFailureListener() {
+
+        }).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                        finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(AddTopicActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();

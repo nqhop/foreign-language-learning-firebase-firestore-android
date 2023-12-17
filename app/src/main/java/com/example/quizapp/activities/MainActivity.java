@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 //        startActivity(new Intent(this, AddTopicActivity.class));
 
         applyNightMode();
-        demoDatabase();
+//        demoDatabase();
 //        deleteVocab(userId1, "001");
 //        deleteVocab(userId1, "002");
 //        deleteVocab(userId2, "001");
@@ -148,10 +148,8 @@ public class MainActivity extends AppCompatActivity {
 //                        String fieldValue = document.getString("email");
                         Log.d("demoDatabase ", document.getData().toString());
                     } else {
-                        // Handle the case where the document does not exist
                     }
                 } else {
-                    // Handle exceptions or errors that occurred while retrieving the document
                 }
             }
         });
@@ -183,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
     private void createTopicExamble(){
         Map<String, Object> topicInfo = new HashMap<>();
         topicInfo.put("name", "vegatables");
+        topicInfo.put("privacy", "private");
         FirebaseFirestore firestore = FirebaseUtils.getFirestoreInstance();
         CollectionReference collectionRef = firestore.collection("topic");
         collectionRef.document(userId1).collection("topicCreated").document("001").set(topicInfo);
@@ -206,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
         Map<String, Object> topicInfo2 = new HashMap<>();
         topicInfo2.put("name", "foods");
+        topicInfo.put("privacy", "private");
         collectionRef.document(userId1).collection("topicCreated").document("002").set(topicInfo2);
         String[] foodsVocab = {"Cheeseburger", "Chicken nuggets", "Chili sauce", "Chips", "Donut"};
         String[] foodsVocabMeaning = {"bánh mỳ kẹp", "gà viên chiên", "tương ớt", " khoai tây chiên", "bánh vòng"};
@@ -226,33 +226,37 @@ public class MainActivity extends AppCompatActivity {
 
 
         Map<String, Object> topicInfoForUser2 = new HashMap<>();
-        topicInfoForUser2.put("name", "jobs 2");
+        topicInfoForUser2.put("name", "jobs");
+        topicInfo.put("privacy", "private");
         collectionRef.document(userId2).collection("topicCreated").document("001").set(topicInfoForUser2);
         for(int i = 0; i < 2; i++){
             Map<String, Object> vocab = new HashMap<>();
-            vocab.put("created_at", "Dec 7, 2023");
-            vocab.put("speech", "");
-            vocab.put("star", "");
-            vocab.put("status", "");
-            vocab.put("update_at", "Dec 7, 2023");
-            vocab.put("vietnameses_meaning", "");
-            vocab.put("word", "");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vocab.put("created_at", Timestamp.from(Instant.now()));
+                vocab.put("update_at", Timestamp.from(Instant.now()));
+            }
+            vocab.put("star", false);
+            vocab.put("status", "new");
+            vocab.put("vietnameses_meaning", "doctor");
+            vocab.put("word", "Bác sĩ");
             collectionRef.document(userId2).collection("topicCreated").document("001").collection("vocab").add(vocab);
         }
 
 
         Map<String, Object> topicInfoForUser2_2 = new HashMap<>();
-        topicInfoForUser2_2.put("name", "works 2");
+        topicInfoForUser2_2.put("name", "School");
+        topicInfo.put("privacy", "private");
         collectionRef.document(userId2).collection("topicCreated").document("002").set(topicInfoForUser2_2);
         for(int i = 0; i < 2; i++){
             Map<String, Object> vocab = new HashMap<>();
-            vocab.put("created_at", "Dec 7, 2023");
-            vocab.put("speech", "");
-            vocab.put("star", "");
-            vocab.put("status", "");
-            vocab.put("update_at", "Dec 7, 2023");
-            vocab.put("vietnameses_meaning", "");
-            vocab.put("word", "");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vocab.put("created_at", Timestamp.from(Instant.now()));
+                vocab.put("update_at", Timestamp.from(Instant.now()));
+            }
+            vocab.put("star", false);
+            vocab.put("status", "new");
+            vocab.put("vietnameses_meaning", "Teacher");
+            vocab.put("word", "Cô giáo");
             collectionRef.document(userId2).collection("topicCreated").document("002").collection("vocab").add(vocab);
         }
 

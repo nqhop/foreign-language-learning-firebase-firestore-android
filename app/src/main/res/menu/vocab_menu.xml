@@ -10,6 +10,10 @@
         android:title="Sửa"
         android:icon="@drawable/baseline_edit_24"/>
     <item
+        android:id="@+id/privacyTopic"
+        android:title="Chuyển chế độ"
+        android:icon="@drawable/baseline_delete_24"/>
+    <item
         android:id="@+id/deleteTopic"
         android:title="Xóa học phần"
         android:icon="@drawable/baseline_delete_24"/>
