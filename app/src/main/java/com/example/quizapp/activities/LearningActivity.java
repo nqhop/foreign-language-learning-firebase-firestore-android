@@ -205,22 +205,36 @@ public class LearningActivity extends AppCompatActivity {
 
         CollectionReference subcollectionRef = documentRef.collection(subcollectionName);
 
-        subcollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//        subcollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    QuerySnapshot querySnapshot = task.getResult();
+//                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+//                        for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
+//                            Log.d("PageFragmentDirectory","created " + documentSnapshot.getData().get("name"));
+//                            Log.d("PageFragmentDirectory","ID " + documentSnapshot.getId());
+//                            myDirectoriesList.add(new Directory2((String) documentSnapshot.getData().get("name"), documentSnapshot.getId()));
+//                            myDirectoriesName.add((String) documentSnapshot.getData().get("name"));
+//                        }
+//                    }
+//                    showDialog();
+//                }
+//            };
+//        });
+
+        DocumentReference collectionRef = firestore.collection("forder").document(UserIDAcount);
+        collectionRef.collection("topicID").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    QuerySnapshot querySnapshot = task.getResult();
-                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
-                            Log.d("PageFragmentDirectory","created " + documentSnapshot.getData().get("name"));
-                            Log.d("PageFragmentDirectory","ID " + documentSnapshot.getId());
-                            myDirectoriesList.add(new Directory2((String) documentSnapshot.getData().get("name"), documentSnapshot.getId()));
-                            myDirectoriesName.add((String) documentSnapshot.getData().get("name"));
-                        }
-                    }
-                    showDialog();
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                for(DocumentSnapshot document : documents) {
+                    String name = (String) document.getData().get("name");
+                    Log.d("Firestore", "name -> " + name);
+                    myDirectoriesName.add(name);
                 }
-            };
+                showDialog();
+            }
         });
 
     }
@@ -242,7 +256,7 @@ public class LearningActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 String selectedItem = myDirectoriesName.get(position);
-//                addTopicToDirectoryInFirestore(position);
+                addTopicToDirectoryInFirestore(position);
                 Toast.makeText(LearningActivity.this, "Added to: " + selectedItem, Toast.LENGTH_SHORT).show();
             }
         });
@@ -260,7 +274,7 @@ public class LearningActivity extends AppCompatActivity {
     private void addTopicToDirectoryInFirestore(int position) {
         String collectionName = "forder";
 
-        firestore.collection(collectionName).document(UserIDAcount).collection("topcicID").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        firestore.collection(collectionName).document(UserIDAcount).collection("topicID").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
@@ -270,6 +284,19 @@ public class LearningActivity extends AppCompatActivity {
                     Log.d("Firestore", "name -> " + name);
                 }
 
+            }
+        });
+
+        DocumentReference collectionRef = firestore.collection("forder").document(UserIDAcount);
+        collectionRef.collection("topicID").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                for(DocumentSnapshot document : documents) {
+                    String name = (String) document.getData().get("name");
+                    Log.d("Firestore", "name -> " + name);
+                    myDirectoriesName.add(name);
+                }
             }
         });
 
