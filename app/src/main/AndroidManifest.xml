@@ -17,6 +17,9 @@
         android:theme="@style/Theme.QuizApp"
         tools:targetApi="31">
         <activity
+            android:name=".DirectoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.multipleChoiceTestActivity"
             android:exported="false" />
         <activity
@@ -50,10 +53,10 @@
             android:label="Change Password" />
         <activity
             android:name=".activities.AddTopicActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".activities.WordTestActivity"
-            android:exported="false"/>
-      </application>
+            android:exported="false" />
+    </application>
 
 </manifest>

@@ -18,31 +18,46 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.quizapp.R;
+import com.example.quizapp.adapters.LibraryDirectoryAdapter;
 import com.example.quizapp.adapters.VocabLearningAdapter;
 import com.example.quizapp.fragments.LibraryFragment;
+import com.example.quizapp.models.Directory2;
+import com.example.quizapp.models.TopicDirectory;
 import com.example.quizapp.models.TopicLibrary;
 import com.example.quizapp.models.Vocab2;
 import com.example.quizapp.utils.FirebaseUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Transaction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -57,6 +72,8 @@ public class LearningActivity extends AppCompatActivity {
     String collection = "", userID, topicID;
     FirebaseFirestore firestore;
     TopicLibrary topicLibraryItem;
+    ArrayList<Directory2> myDirectoriesList;
+    ArrayList<String> myDirectoriesName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,9 +188,114 @@ public class LearningActivity extends AppCompatActivity {
             startActivity(intent);
         } else if (item.getItemId() == R.id.privacyTopic) {
             setPrivacyTopic();
+        } else if (item.getItemId() == R.id.addToDirectory) {
+            myAddToDirectory();
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void myAddToDirectory() {
+        myDirectoriesList = new ArrayList<>();
+        myDirectoriesName = new ArrayList<>();
+
+        String collectionName = "forder";
+        String subcollectionName = "forder";
+
+        DocumentReference documentRef = firestore.collection(collectionName).document(UserIDAcount);
+
+        CollectionReference subcollectionRef = documentRef.collection(subcollectionName);
+
+        subcollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                        for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
+                            Log.d("PageFragmentDirectory","created " + documentSnapshot.getData().get("name"));
+                            Log.d("PageFragmentDirectory","ID " + documentSnapshot.getId());
+                            myDirectoriesList.add(new Directory2((String) documentSnapshot.getData().get("name"), documentSnapshot.getId()));
+                            myDirectoriesName.add((String) documentSnapshot.getData().get("name"));
+                        }
+                    }
+                    showDialog();
+                }
+            };
+        });
+
+    }
+
+    private void showDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Chọn thư mục");
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_listview, null);
+        builder.setView(dialogView);
+
+        ListView listView = dialogView.findViewById(R.id.listView);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, myDirectoriesName);
+
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                String selectedItem = myDirectoriesName.get(position);
+//                addTopicToDirectoryInFirestore(position);
+                Toast.makeText(LearningActivity.this, "Added to: " + selectedItem, Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void addTopicToDirectoryInFirestore(int position) {
+        String collectionName = "forder";
+        String subcollectionName = "forder";
+
+        DocumentReference documentRef = firestore.collection(collectionName).document(UserIDAcount);
+
+        DocumentReference documentReference = documentRef.collection(subcollectionName).document(myDirectoriesList.get(position).getId());
+        String fieldToAdd = "my_field";
+        List<String> initialValue = Arrays.asList("1", "2", "3");
+
+        firestore.runTransaction(new Transaction.Function<Void>() {
+                    @Override
+                    public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                        DocumentSnapshot documentSnapshot = transaction.get(documentRef);
+
+                        if (documentSnapshot.exists()) {
+                            if (documentSnapshot.contains(fieldToAdd)) {
+                                Log.d("Firestore", "Field already exists");
+                                return null;
+                            }
+                        }
+                        transaction.update(documentRef, fieldToAdd, FieldValue.arrayUnion(initialValue.toArray()));
+                        return null;
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Firestore", "Field created and array value added successfully");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("Firestore", "Failed to create field or add array value", e);
+                    }
+                });
+    }
+
 
     private void setPrivacyTopic() {
         firestore = FirebaseUtils.getFirestoreInstance();

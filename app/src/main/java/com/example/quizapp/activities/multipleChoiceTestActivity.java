@@ -187,11 +187,13 @@ public class  multipleChoiceTestActivity extends AppCompatActivity {
         radioButton2 = dialogQuestion.findViewById(R.id.radio_b);
         radioButton3 = dialogQuestion.findViewById(R.id.radio_c);
         radioButton4 = dialogQuestion.findViewById(R.id.radio_d);
-
+        try {
         radioButton1.setText(EnglishIsSelected ? vocabList.get((Integer) indexList.get(0)).getMeaning() : vocabList.get((Integer) indexList.get(0)).getWord());
         radioButton2.setText(EnglishIsSelected ? vocabList.get((Integer) indexList.get(1)).getMeaning() : vocabList.get((Integer) indexList.get(1)).getWord());
         radioButton3.setText(EnglishIsSelected ? vocabList.get((Integer) indexList.get(2)).getMeaning() : vocabList.get((Integer) indexList.get(2)).getWord());
         radioButton4.setText(EnglishIsSelected ? vocabList.get((Integer) indexList.get(3)).getMeaning() : vocabList.get((Integer) indexList.get(3)).getWord());
+        }catch (Exception e){}
+
 //        radioButton2.setText(vocabList.get((Integer) indexList.get(1)).getMeaning());
 //        radioButton3.setText(vocabList.get((Integer) indexList.get(2)).getMeaning());
 //        radioButton4.setText(vocabList.get((Integer) indexList.get(3)).getMeaning());

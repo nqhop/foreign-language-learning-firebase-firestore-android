@@ -62,13 +62,13 @@ public class PageFragmentDirectory extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        DocumentReference collectionRef = firestore.collection("users").document(id_user);
+        DocumentReference collectionRef = firestore.collection("Users").document(id_user);
         collectionRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     user = new User((String) documentSnapshot.getData().get("fullName"), (String) documentSnapshot.getData().get("email"), id_user);
-                    Log.d("onViewCreated", user.toString());
+                    Log.d("PageFragmentDirectory", user.getName());
                     fetchDerectory(view.getContext());
                 }
             }
@@ -87,28 +87,29 @@ public class PageFragmentDirectory extends Fragment {
     }
 
     private void fetchDerectory(Context c) {
-        CollectionReference collectionRef = firestore.collection("forder");
-        collectionRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
-                for (DocumentSnapshot document : documents) {
-                    String documentName = (String) document.getData().get("forder_name");
-                    String documentUserId = (String) document.getData().get("user_id");
-                    if(documentUserId != null){
-                        myDirectories.add(new TopicDirectory(documentName, user));
-                        Log.d("dataUser", "documentName " + documentName);
-                        Log.d("dataUser","documentUserId " + documentUserId);
-                        Log.d("dataUser","user name " + user.getName());
-                    }
-                }
-                Log.d("dataUser","myDirectories size " + myDirectories.size());
-                Log.d("dataUser","user name " + user.getName());
+        String collectionName = "forder";
+        String subcollectionName = "forder";
 
-                LibraryDirectoryAdapter libraryDirectoryAdapter = new LibraryDirectoryAdapter(getContext(), myDirectories);
-                fragmentPageDirectoryRecyclerView.setAdapter(libraryDirectoryAdapter);
-                fragmentPageDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(c));
-            }
+        DocumentReference documentRef = firestore.collection(collectionName).document(id_user);
+
+        CollectionReference subcollectionRef = documentRef.collection(subcollectionName);
+
+        subcollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                        for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
+                            Log.d("PageFragmentDirectory","created " + documentSnapshot.getData().get("name"));
+                            myDirectories.add(new TopicDirectory((String) documentSnapshot.getData().get("name"), user));
+                        }
+                    }
+                    LibraryDirectoryAdapter libraryDirectoryAdapter = new LibraryDirectoryAdapter(getContext(), myDirectories);
+                    fragmentPageDirectoryRecyclerView.setAdapter(libraryDirectoryAdapter);
+                    fragmentPageDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(c));
+                }
+            };
         });
     }
 }
