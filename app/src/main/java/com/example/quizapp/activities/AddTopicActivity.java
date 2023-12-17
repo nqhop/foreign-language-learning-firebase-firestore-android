@@ -167,6 +167,7 @@ public class AddTopicActivity extends AppCompatActivity {
         Map<String, Object> topicInfo = new HashMap<>();
         topicName = topicNameEditText.getText().toString();
         topicInfo.put("name", topicName);
+        topicInfo.put("privacy", "private");
         CollectionReference collectionRef = firestore.collection("topic");
         collectionRef.document(userID).collection("topicCreated").add(topicInfo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override

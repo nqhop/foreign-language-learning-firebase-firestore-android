@@ -299,38 +299,6 @@ public class LearningActivity extends AppCompatActivity {
                 }
             }
         });
-
-//        DocumentReference documentReference = documentRef.collection(subcollectionName).document(myDirectoriesList.get(position).getId());
-//        String fieldToAdd = "my_field";
-//        List<String> initialValue = Arrays.asList("1", "2", "3");
-//
-//        firestore.runTransaction(new Transaction.Function<Void>() {
-//                    @Override
-//                    public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-//                        DocumentSnapshot documentSnapshot = transaction.get(documentRef);
-//
-//                        if (documentSnapshot.exists()) {
-//                            if (documentSnapshot.contains(fieldToAdd)) {
-//                                Log.d("Firestore", "Field already exists");
-//                                return null;
-//                            }
-//                        }
-//                        transaction.update(documentRef, fieldToAdd, FieldValue.arrayUnion(initialValue.toArray()));
-//                        return null;
-//                    }
-//                })
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        Log.d("Firestore", "Field created and array value added successfully");
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.e("Firestore", "Failed to create field or add array value", e);
-//                    }
-//                });
     }
 
 
