@@ -74,42 +74,26 @@ public class PageFragmentDirectory extends Fragment {
             }
         });
 
-
-
         myDirectories = new ArrayList<>();
         fragmentPageDirectoryRecyclerView = view.findViewById(R.id.fragmentPageDirectoryRecyclerView);
-//        myDirectories.add(new TopicDirectory("foods" , new User("hop", "hop@gamil.com", "123")));
-//        myDirectories.add(new TopicDirectory("foods" , new User("hop", "hop@gamil.com", "123")));
-
-//        LibraryDirectoryAdapter libraryDirectoryAdapter = new LibraryDirectoryAdapter(getContext(), myDirectories);
-//        fragmentPageDirectoryRecyclerView.setAdapter(libraryDirectoryAdapter);
-//        fragmentPageDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
 
     private void fetchDerectory(Context c) {
         String collectionName = "forder";
-        String subcollectionName = "forder";
-
-        DocumentReference documentRef = firestore.collection(collectionName).document(id_user);
-
-        CollectionReference subcollectionRef = documentRef.collection(subcollectionName);
-
-        subcollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        DocumentReference collectionRef = firestore.collection("forder").document(id_user);
+        collectionRef.collection("topicID").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    QuerySnapshot querySnapshot = task.getResult();
-                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
-                            Log.d("PageFragmentDirectory","created " + documentSnapshot.getData().get("name"));
-                            myDirectories.add(new TopicDirectory((String) documentSnapshot.getData().get("name"), user));
-                        }
-                    }
-                    LibraryDirectoryAdapter libraryDirectoryAdapter = new LibraryDirectoryAdapter(getContext(), myDirectories);
-                    fragmentPageDirectoryRecyclerView.setAdapter(libraryDirectoryAdapter);
-                    fragmentPageDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(c));
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                for(DocumentSnapshot document : documents) {
+                    String name = (String) document.getData().get("name");
+                    Log.d("Firestore", "name -> " + name);
+                    myDirectories.add(new TopicDirectory(name, user));
                 }
-            };
+                LibraryDirectoryAdapter libraryDirectoryAdapter = new LibraryDirectoryAdapter(getContext(), myDirectories);
+                fragmentPageDirectoryRecyclerView.setAdapter(libraryDirectoryAdapter);
+                fragmentPageDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(c));
+            }
         });
     }
 }

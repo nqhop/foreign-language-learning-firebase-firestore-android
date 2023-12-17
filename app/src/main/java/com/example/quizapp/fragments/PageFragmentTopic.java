@@ -27,6 +27,7 @@ import com.example.quizapp.utils.FirebaseUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -46,7 +47,7 @@ public class PageFragmentTopic extends Fragment implements RecyclerViewInterface
 
     FirebaseFirestore firestore;
     RecyclerView fragmentPageTopicRecyclerView;
-    final String id_user = "AaWZ5yEnedL7al8jRhH9";
+    String id_user = "AaWZ5yEnedL7al8jRhH9";
     final String userId2 = "VGC9WUC8CPdakSl38JBkDJPLz1r2";
     int totalCount = 0;
     ArrayList<TopicLibrary> myTopicLibraries;
@@ -60,6 +61,10 @@ public class PageFragmentTopic extends Fragment implements RecyclerViewInterface
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("Library", "PageFragmentTopic");
         firestore = FirebaseUtils.getFirestoreInstance();
+//        firestore = FirebaseFirestore.getInstance();
+//        FirebaseAuth auth = FirebaseAuth.getInstance();
+//        id_user = auth.getCurrentUser().getUid();
+
         View rootView = inflater.inflate(R.layout.fragment_page_topic, container, false);
         return inflater.inflate(R.layout.fragment_page_topic, container, false);
     }

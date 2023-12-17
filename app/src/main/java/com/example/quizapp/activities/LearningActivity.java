@@ -259,41 +259,51 @@ public class LearningActivity extends AppCompatActivity {
 
     private void addTopicToDirectoryInFirestore(int position) {
         String collectionName = "forder";
-        String subcollectionName = "forder";
 
-        DocumentReference documentRef = firestore.collection(collectionName).document(UserIDAcount);
+        firestore.collection(collectionName).document(UserIDAcount).collection("topcicID").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                Log.d("Firestore", documents.get(0).getData().toString());
+                for(DocumentSnapshot document : documents){
+                    String name = (String) document.getData().get("name");
+                    Log.d("Firestore", "name -> " + name);
+                }
 
-        DocumentReference documentReference = documentRef.collection(subcollectionName).document(myDirectoriesList.get(position).getId());
-        String fieldToAdd = "my_field";
-        List<String> initialValue = Arrays.asList("1", "2", "3");
+            }
+        });
 
-        firestore.runTransaction(new Transaction.Function<Void>() {
-                    @Override
-                    public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                        DocumentSnapshot documentSnapshot = transaction.get(documentRef);
-
-                        if (documentSnapshot.exists()) {
-                            if (documentSnapshot.contains(fieldToAdd)) {
-                                Log.d("Firestore", "Field already exists");
-                                return null;
-                            }
-                        }
-                        transaction.update(documentRef, fieldToAdd, FieldValue.arrayUnion(initialValue.toArray()));
-                        return null;
-                    }
-                })
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Firestore", "Field created and array value added successfully");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("Firestore", "Failed to create field or add array value", e);
-                    }
-                });
+//        DocumentReference documentReference = documentRef.collection(subcollectionName).document(myDirectoriesList.get(position).getId());
+//        String fieldToAdd = "my_field";
+//        List<String> initialValue = Arrays.asList("1", "2", "3");
+//
+//        firestore.runTransaction(new Transaction.Function<Void>() {
+//                    @Override
+//                    public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+//                        DocumentSnapshot documentSnapshot = transaction.get(documentRef);
+//
+//                        if (documentSnapshot.exists()) {
+//                            if (documentSnapshot.contains(fieldToAdd)) {
+//                                Log.d("Firestore", "Field already exists");
+//                                return null;
+//                            }
+//                        }
+//                        transaction.update(documentRef, fieldToAdd, FieldValue.arrayUnion(initialValue.toArray()));
+//                        return null;
+//                    }
+//                })
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        Log.d("Firestore", "Field created and array value added successfully");
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.e("Firestore", "Failed to create field or add array value", e);
+//                    }
+//                });
     }
 
 

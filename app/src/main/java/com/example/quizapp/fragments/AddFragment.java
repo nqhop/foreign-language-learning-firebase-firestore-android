@@ -21,7 +21,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -91,23 +93,24 @@ public class AddFragment extends Fragment {
 
         String subcollectionName = UUID.randomUUID().toString();
         Map<String, Object> data = new HashMap<>();
+        List<String> topicAdded = new ArrayList<>();
         data.put("name", directoryName);
+        data.put("topic", topicAdded);
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        CollectionReference collectionReference = firestore.collection("forder").document(userID).collection("forder");
-        collectionReference.add(data)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(getContext(), "Successful", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), "Some thing went wrong", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        CollectionReference collectionReference = firestore.collection("forder").document(userID).collection("topicID");
+        collectionReference.document(subcollectionName).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    Toast.makeText(getContext(), "Successful", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getContext(), "Some thing went wrong", Toast.LENGTH_SHORT).show();
+                }
+            });
+
 
 //        CollectionReference subcollectionRef = documentRef.collection(subcollectionName);
 //
